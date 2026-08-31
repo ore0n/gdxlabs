@@ -1,0 +1,259 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>GdxLabs > Home</title>
+<meta name="keywords" content="games, strategy, dark, multi platform, multi-layer, animations" />
+<meta name="description" content="GdxLabs - Feature-rich Multi layer games" />
+
+<meta property="og:title" content="GdxLabs Gaming">
+<meta property="og:image" content="http://www.gdxlabs.com/i/careers_01t.jpg">
+<meta property="og:type" content="website" />
+<meta property="og:url" content="http://www.gdxlabs.com" />
+
+<link rel="icon" 
+      type="image/png" 
+      href="favicon.png" />
+
+<link href="style.css" rel="stylesheet" type="text/css" />
+<!--[if IE 7]><link href="/assets/css/ie.css" rel="stylesheet" type="text/css" /><![endif]-->
+<!--[if lt IE 7]>
+<script type="text/javascript" src="/assets/css/iepngfix_tilebg.js"></script>
+<link href="/assets/css/ie6.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script type="text/javascript" src="js/jcarousellite_1.0.1.js"></script>
+<script type="text/javascript" src="js/fg.menu.js"></script>
+
+<script type="text/javascript" src="js/custom.js"></script>
+
+<script type="text/javascript" src="js/thickbox.js"></script>
+<link rel="stylesheet" type="text/css" href="thickbox.css" media="screen" />
+
+</head>
+
+<!--body style="background: transparent url(../../i/petro_ks_background.jpg) center top no-repeat;background-color:#000000;background-attachment:fixed !important;"-->
+<!--body style="background: transparent url(../../i/vic_bg_outside.jpg) center top no-repeat;background-color:#000000;background-attachment:fixed !important;"-->
+<body style="background: transparent url(../../i/main_bg_clean.jpg) center top no-repeat;background-color:#000000;background-attachment:fixed !important;">
+
+
+	<div class="shell">
+	
+	<!-- *Note to Developers*
+$_g is the designation for the global configuration variable.
+Please refer to config.php for Variable declarations.
+For instance, $_g->loc will output the current URL parse directory i.e. $_g->loc on the News page will output 'news'
+ -->
+
+<div id="wrapper">
+<div class="header" style="height: 300px !important;position:relative;z-index:50;">
+  <div class="logo" onClick="location.href = 'index.php'" style="cursor:pointer;">
+</div>
+
+<div id="navContain">
+  <ul id="mainNav2">
+    <li id="nav1"><a href="#" title="Home"></a></li>
+    <li id="nav2"><a href="/games" title="Games"></a></li>
+<!--   	<li id="nav3"><a href="/forums" title="Community"></a></li> -->
+	<li id="nav3"><a href="http://www.facebook.com/gdxlabs" title="Community"></a></li>
+    <li id="nav4"><a href="/careers" title="Careers"></a></li>
+    <li id="nav5"><a href="http://www.facebook.com/gdxlabs" target="_blank" title="News"></a></li>
+    <li id="nav6"><a href="/aboutus" title="About Us"></a></li>
+  </ul>
+</div>
+
+
+<div id="flashHolder">
+
+<!-- Old script
+<script src="http://www.petroglyphgames.com/assets/js/bannerad_petro.js" type="text/javascript"></script>
+<script type="text/javascript">
+myAd = new Banner( 15, 844, 249, "Visit this site", 0, 1 );
+myAd.Ad( "http://www.petroglyphgames.com/assets/php/banners/banner_cap.jpg", "https://itunes.apple.com/us/app/coin-phrase-free-fun-social/id577581980?mt=8", "_blank", "Coin a Phrase mobile game" );
+myAd.Ad( "http://www.petroglyphgames.com/i/main/banners/banner_steam.jpg", "http://store.steampowered.com/search/?snr=1_7_7_151_12&term=petroglyph", "_blank", "Petroglyph games on STEAM" );
+myAd.output();
+</script>
+-->
+
+<!-- Start rotating banner script -->
+<script language="JavaScript1.2">
+
+var howOften = 7; //number often in seconds to rotate
+var current = 0; //start the counter at 0
+var ns6 = document.getElementById&&!document.all; //detect netscape 6
+
+// place your images, text, etc in the array elements here
+var items = new Array();
+
+    items[0]="<a href='http://www.oldforces.com' target='_blank'><img alt='Oldforces' src='http://www.gdxlabs.com/i/oldforces/promo.jpg' height='239' width='844' border='0' /></a>"; //a linked image
+	items[1]="<a href='http://www.battleshade.com' target='_blank'><img alt='Battlehade' src='http://www.gdxlabs.com/i/battleshade/promo.jpg' height='239' width='844' border='0' /></a>"; //a linked image
+    
+function rotater() {
+    document.getElementById("placeholder").innerHTML = items[current];
+    current = (current==items.length-1) ? 0 : current + 1;
+    setTimeout("rotater()",howOften*2000);
+}
+
+function rotater() {
+    if(document.layers) {
+        document.placeholderlayer.document.write(items[current]);
+        document.placeholderlayer.document.close();
+    }
+    if(ns6)document.getElementById("placeholderdiv").innerHTML=items[current]
+        if(document.all)
+            placeholderdiv.innerHTML=items[current];
+
+    current = (current==items.length-1) ? 0 : current + 1; //increment or reset
+    setTimeout("rotater()",howOften*1000);
+}
+window.onload=rotater;
+//-->
+</script>
+<layer id="placeholderlayer"></layer><div id="placeholderdiv"></div>
+</div>
+<!-- End rotating banner script -->
+
+<!-- Page Headers -->
+
+</div>
+
+<div id="stone-banner"></div>
+<div class="content" style='position:relative;z-index:50'>
+
+<!-- Start Left Column -->
+
+<div id="home_leftcol">
+
+<!-- Forums Call -->
+
+<div class="forumsContain" >
+
+<!-- Board Games Button
+<div class="boardgames_button"><a id="hoverimage1" href="/boardgames"></a></div>
+-->
+
+<!-- Community Call -->
+<div class="sideBox_contain_frontpage">
+  <!--
+<div id="header"><img src="../i/community_header.png" alt="" /></div>
+-->
+<!--
+<div id="topFade"> </div>
+
+<p>&nbsp;</p>
+-->
+<style>
+.twitter-timeline {
+	width:225px;
+	height:400px;
+	margin-top:-95px;
+	margin-left:0px;
+	padding:0;
+}
+</style>
+
+<a class="twitter-timeline"  href="https://twitter.com/gdxlabs"  data-theme="dark" data-width="255" data-height="375" data-widget-id="344859129849987072"> </a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div>
+
+<!-- We're Hiring Call
+
+<div class="hiringContain">
+<img src="../i/hiring_header.png" alt="Now Hiring" />
+<div id="textContain" style="margin-left:40px;">
+<ul id="bodyUL"><li><a href="/careers"><font size="2">UI Scripter</font></a></li></ul>
+</div>
+</div>
+
+-->
+
+</div> <!-- End Left Column -->
+
+<!-- Start Right Column -->
+
+<div id="mainHome_imagefeature" style="background: none !important;margin-left:20px;margin-top:5px;margin-bottom:-5px;">
+<div id="home_rightcol">
+<!-- VIDEO -->
+<iframe width="524" height="355" src="https://www.youtube.com/embed/videoseries?list=PLZPZoLUA9KqqwFBt22ep6wrYSRhxzBUF0&amp;controls=0&autoplay=1" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<!-- TEXT SECTION -->
+<div id="mainText">
+<!-- EMPTY -->
+</div>
+<!-- END OF TEXT SECTION -->
+
+</div>
+
+<div class="newsContain">
+<div id="header">
+<img src="i/featuredgames_header_rc.png" alt="Latest News" />
+</div>
+
+<div id="topFade"></div>
+<div id="middle">
+<div id="middleContain">
+<div id="newsitems">
+
+<div class="watermark_1"></div><div class="watermark_2"></div>
+
+<!-- Petro_Button.jpg | Victory_Button.jpg | GoGButton.png | HoGButton.jpg | BFGButton.jpg | UAW_Button.jpg | PZ_RA_Button.jpg | EONButton.jpg | /i/holidays/button_holidays.jpg -->
+
+<div id="newsitem_1">
+<a href="http://www.battleshade.com" target="_blank">
+<img src="i/games/battleshade/banner.jpg" width="160">
+<div class="newsitem_date">Battle Battalions<br>Multi-Unit Tank MOBA!</div></a>
+</div>
+
+<div id="newsitem_2">
+<a href="http://www.oldforces.com" target="_blank">
+<img src="i/games/oldforces/banner.jpg" width="160">
+<div class="newsitem_date">Oldforces</div></a>
+</div>
+
+<!--<div id="newsitem_3">
+<a href="http://store.steampowered.com/app/290790/" target="_blank">
+<img src="/games/go-for-the-flag.png" width="160">
+<div class="newsitem_date">GREY GOO<br>An <i>EPIC</i> RTS Journey!</div></a>
+</div>-->
+
+</div>
+</div>
+<!--
+<div id="moreBtn" style="float:right;margin-right:6px;">
+<a href="/news"><img src="../i/more_btn.png" alt="More" /></a>
+</div>
+-->
+</div>
+<div id="bottom"></div>
+</div>
+</div>
+
+</div><!-- End Right Column -->
+
+
+
+<div class="footer"
+		>
+<div id="left">
+Copyright &copy;2018 GDXLabs / <a href="/privacy"><font color="white" size="1">Privacy Policy</font></a>
+</div>
+
+<div id="right">
+<a href="/"> HOME </a>   |  <a href="/games">   GAMES  </a>  | <a href="/careers">   CAREERS  </a>  | <a href="http://www.facebook.com/gdxlabs"> FACEBOOK  </a>  |     <a href="/aboutus">  ABOUT US  </a>  |  <a href="/contactus"> CONTACT US </a>
+</div>
+
+</div>
+</div>
+</div>
+
+
+
+</body>
+</html>
