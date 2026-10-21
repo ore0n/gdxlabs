@@ -1,0 +1,19 @@
+.vc_images_carousel.vc_slide{
+    margin-left: auto;
+}
+.cactus-container{
+    /*background-color: #1B1F2B;*/
+}
+.vc_tta-tab.vc_active a{
+    color:whitesmoke !important;
+}
+.vc_tta-tab a:hover{
+    color:whitesmoke !important;
+}
+.vc_separator h4{
+    color: whitesmoke;
+}
+.vc_column_container>.vc_column-inner{
+padding-left : 0 !important;
+padding-right: 0 !important;
+}

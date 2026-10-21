@@ -1,0 +1,236 @@
+/*membership*/
+	.ms-membership-form-wrapper #ms-shortcode-register-user-form,
+	.ms-membership-form-wrapper #ms-view-frontend-profile-form { padding:40px; border:1px solid rgba(204,204,204,1.0); max-width:640px; margin:auto; margin-top:40px; margin-bottom:20px; background-color:rgba(255,255,255,1.00); -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.05); box-shadow: 0 0 20px rgba(0,0,0,0.05); position:relative;}
+	
+	.ms-membership-form-wrapper #ms-shortcode-register-user-form:before,
+	.ms-membership-form-wrapper #ms-view-frontend-profile-form:before {content:''; display:block; bottom:100%; height:3px; left:-1px; right:-1px; background-color:rgba(217,37,29,1.0); position:absolute;}
+	
+	#ms-shortcode-register-user-form #register { text-transform:uppercase;}
+	
+	.ms-membership-form-wrapper legend { font-size:28px; font-weight:bold; color:rgba(34,34,34,1.0); border-bottom:none; margin-top:-14px; margin-bottom:24px;}
+	.ms-membership-form-wrapper .ms-form-element { margin:0 0 20px 0}
+	.ms-membership-form-wrapper .ms-form-element.ms-form-element-submit {margin:0;}
+	.ms-membership-form-wrapper .ms-form-element.ms-form-element-submit ~ p { padding:0; margin:0;}
+	.ms-membership-form-wrapper .ms-form-element .wpmui-field-label { display:block; margin-top:-7px; margin-bottom:7px; color:rgba(153,153,153,1.0);}
+	body #wpwrap .wpmui-field-input, 
+	body #wpwrap .wpmui-field-button, 
+	body .ms-membership-form-wrapper .wpmui-field-input, 
+	body .ms-membership-form-wrapper .wpmui-field-button { margin:0;}
+	
+	body #wpwrap .wpmui-field-input.button, 
+	body #wpwrap .wpmui-field-input.button-primary, 
+	body #wpwrap .wpmui-field-button, 
+	body .ms-membership-form-wrapper .wpmui-field-input.button, 
+	body .ms-membership-form-wrapper .wpmui-field-input.button-primary, 
+	body .ms-membership-form-wrapper .wpmui-field-button {margin-right:0;}
+	
+	body #wpwrap .wpmui-field-input.button ~ br, 
+	body #wpwrap .wpmui-field-input.button-primary ~ br, 
+	body #wpwrap .wpmui-field-button ~ br, 
+	body .ms-membership-form-wrapper .wpmui-field-input.button ~ br, 
+	body .ms-membership-form-wrapper .wpmui-field-input.button-primary ~ br, 
+	body .ms-membership-form-wrapper .wpmui-field-button ~ br,
+	.ms-membership-form-wrapper ~ .tptn_counter { display:none;}
+	
+	body #wpwrap .wpmui-field-input.button ~ .wpmui-link, 
+	body #wpwrap .wpmui-field-input.button-primary ~ .wpmui-link, 
+	body #wpwrap .wpmui-field-button ~ .wpmui-link, 
+	body .ms-membership-form-wrapper .wpmui-field-input.button ~ .wpmui-link, 
+	body .ms-membership-form-wrapper .wpmui-field-input.button-primary ~ .wpmui-link, 
+	body .ms-membership-form-wrapper .wpmui-field-button ~ .wpmui-link { float:right; margin:8px 0 0;}
+	
+	body #wpwrap .wpmui-field-input.button:not(.wpmui-link):not(:hover), 
+	body #wpwrap .wpmui-field-input.button-primary:not(.wpmui-link):not(:hover), 
+	body #wpwrap .wpmui-field-button:not(.wpmui-link):not(:hover), 
+	body .ms-membership-form-wrapper .wpmui-field-input.button:not(.wpmui-link):not(:hover), 
+	body .ms-membership-form-wrapper .wpmui-field-input.button-primary:not(.wpmui-link):not(:hover), 
+	body .ms-membership-form-wrapper .wpmui-field-button:not(.wpmui-link):not(:hover) { background-color:rgba(38,38,38,1.0);}
+	
+	#ms-view-frontend-profile-form ~ * { margin-bottom:-8px; margin-top:-22px;}
+	#cancel { text-decoration:none;}
+	#cancel:hover { text-decoration:underline;}
+	
+	@media(max-width:640px){
+		body #wpwrap .wpmui-field-input.button ~ .wpmui-link, 
+		body #wpwrap .wpmui-field-input.button-primary ~ .wpmui-link, 
+		body #wpwrap .wpmui-field-button ~ .wpmui-link, 
+		body .ms-membership-form-wrapper .wpmui-field-input.button ~ .wpmui-link, 
+		body .ms-membership-form-wrapper .wpmui-field-input.button-primary ~ .wpmui-link, 
+		body .ms-membership-form-wrapper .wpmui-field-button ~ .wpmui-link { display:block; float:none;}
+	}
+    
+        .ms-protection-msg{padding: 15px;    margin: 20px;    border: 1px solid transparent;    border-radius: 4px;    color: #8a6d3b;    background-color: #fcf8e3;    border-color: #faebcc;}
+        .ms-protection-msg a{color:#000}
+/*membership*/
+
+/*shortcode*/
+	.ms-wrapper{padding:60px 40px; border:1px solid rgba(204,204,204,1.0); max-width:640px; margin:auto; margin-top:40px; margin-bottom:20px; background-color:rgba(255,255,255,1.00); -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.05); box-shadow: 0 0 20px rgba(0,0,0,0.05); position:relative; text-align:center;}
+	.ms-wrapper:before {content:''; display:block; bottom:100%; height:3px; left:-1px; right:-1px; background-color:rgba(217,37,29,1.0); position:absolute;}
+	.ms-wrapper .ms-icon { width:120px; height:120px; border-radius:50%; -webkit-border-radius:50%; background-color:rgba(234,234,234,1.0); margin:auto; text-align:center; line-height:120px; font-size:65px; color:rgba(255,255,255,1.00); margin-bottom:20px;}
+	.ms-wrapper .ms-content { font-size:20px; color:rgba(153,153,153,1.0); margin-bottom:19px;}
+	.ms-wrapper .btn { background-color:rgba(188,188,188,1.0);}
+	.ms-wrapper .btn:hover { background-color:rgba(34,34,34,1.0);}
+	.ms-wrapper p:last-child { margin-top:5px; margin-bottom:-15px;}
+/*shortcode*/
+
+.ms-form-price-boxes { font-size:0; line-height:0; margin-left:-15px; margin-right:-15px; text-align:center; margin-bottom:-30px;}
+.ms-form-price-boxes > .ms-membership-form { width:25%; display:inline-block; vertical-align:middle; font-size:14px; line-height:1.8; padding-left:15px; padding-right:15px; margin-bottom:30px; position:relative;}
+.ms-form-price-boxes > .ms-membership-form:before {content:''; display:block; position:absolute; top:-6px; left:9px; right:9px; bottom:-6px; background-color:rgba(242,242,242,1.0); border-radius:5px; -webkit-border-radius:5px;}
+
+.ms-form-price-boxes > .ms-membership-form .ms-membership-details-wrapper { margin:0; width:100%; border-radius:3px; -webkit-border-radius:3px; border-color:rgba(200,200,200,1.0); position:relative; overflow:visible; background-color:rgba(255,255,255,1.00);}
+.ms-membership-details-wrapper .ms-top-bar{ background-color:rgba(153,153,153,1.0); position:relative; margin-left:-1px; margin-right:-1px; margin-top:-1px; border-top-left-radius:3px; border-top-right-radius:3px; -webkit-border-top-left-radius:3px; -webkit-border-top-right-radius:3px;}
+
+.ms-membership-details-wrapper .ms-top-bar h4 { color:rgba(255,255,255,1.00); text-align:center; font-size:20px;}
+.ms-membership-details-wrapper .ms-price-details { padding:0;}
+.ms-price-details .ms-description {padding:20px; text-align:left;}
+.ms-price-details .ms-description p { margin-top:-15px; margin-bottom:-15px;}
+.ms-price-details .ms-price { font-size:60px; color:rgba(34,34,34,1.0); font-weight:bold; text-align:center; line-height:1; background-color:rgba(215,215,215,0.18); padding-top:28px; padding-bottom:11px; border-top:1px solid rgba(215,215,215,0.75);}
+.ms-price-details .ms-bottom-msg{padding: 20px;}
+.ms-price-details .ms-price .currency-mb{font-size:18px; font-weight:bold; vertical-align:top; display:inline-block; margin-right:-12px; padding-top:6px;}
+.ms-bottom-bar {background-color:rgba(215,215,215,0.18); padding-top:10px; padding-bottom:30px; text-align:center;}
+.ms-bottom-bar .ms-signup-button { float:none;}
+html body .ms-membership-details-wrapper .ms-bottom-bar .wpmui-field-input.ms-signup-button { text-transform:uppercase;}
+html body .ms-membership-details-wrapper .ms-bottom-bar .wpmui-field-input.ms-signup-button:not(:hover){ background-color:rgba(217,37,29,1.0);}
+
+.ct-ms-subcription { padding-top:40px; padding-bottom:20px;}
+.ct-ms-subcription .c-sub-title { margin-top:-15px; text-align:center}
+.ct-ms-subcription .c-sub-title:last-child { margin-bottom:-15px;}
+
+.ct-ms-subcription .c-sub-desc { margin-bottom:25px; text-align:center}
+.ct-ms-subcription .c-sub-desc:last-child { margin-bottom:-15px;}
+
+.ct-ms-subcription .ms-move-from { display:none;}
+
+@media(max-width:991px){
+	.ms-form-price-boxes > .ms-membership-form { width:50%;}
+}
+@media(max-width:767px){
+	.ms-form-price-boxes > .ms-membership-form { width:100%;}
+}
+.ms-wrapper.videopro-ct-acc .ms-membership-form-wrapper{ display:none}
+
+.ms-account-wrapper > * { max-width:640px; margin:0 auto 40px auto; border:1px solid rgba(204,204,204,1.0); padding: 17px 30px 32px 30px; position:relative;}
+.ms-account-wrapper > *:before {content:''; display:block; position:absolute; bottom:100%; left:-1px; right:-1px; height:3px; background-color:rgba(217,37,29,1.0);}
+.ms-account-wrapper > * h2 { font-size:20px;}
+
+.ms-account-wrapper > * h2 a,
+.ms-account-wrapper > * h2 a{
+	background-color:transparent; color:rgba(102,102,102,1.0); font-weight:normal; border:1px solid rgba(215,215,215,1.0); padding: 6px 10px 5px 10px;  transition:none; -webkit-transition:none; font-size:12px; 
+	background: rgba(242,242,242,0);
+	background: -moz-linear-gradient(top, rgba(242,242,242,0) 0%, rgba(242,242,242,1) 100%);
+	background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(242,242,242,0)), color-stop(100%, rgba(242,242,242,1)));
+	background: -webkit-linear-gradient(top, rgba(242,242,242,0) 0%, rgba(242,242,242,1) 100%);
+	background: -o-linear-gradient(top, rgba(242,242,242,0) 0%, rgba(242,242,242,1) 100%);
+	background: -ms-linear-gradient(top, rgba(242,242,242,0) 0%, rgba(242,242,242,1) 100%);
+	background: linear-gradient(to bottom, rgba(242,242,242,0) 0%, rgba(242,242,242,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f2f2', endColorstr='#f2f2f2', GradientType=0 );
+	text-decoration:none;
+	border-radius:3px; -webkit-border-radius:3px;
+	text-transform:uppercase;
+}
+.ms-account-wrapper > * h2 a:hover {background-color:transparent; background:rgba(34,34,34,1.0); color:rgba(255,255,255,1.00); border-color:rgba(34,34,34,1.0);}
+
+#body-wrap #wrap .ms-account-wrapper  table,
+#body-wrap #wrap [class*="ms-subscription-"] table { margin-top:1.75em; margin-bottom:0;}
+
+#body-wrap #wrap .ms-account-wrapper  table tbody > tr,
+#body-wrap #wrap .ms-account-wrapper  table tbody > tr:nth-child(even),
+
+#body-wrap #wrap [class*="ms-subscription-"] table tbody > tr,
+#body-wrap #wrap [class*="ms-subscription-"] table tbody > tr:nth-child(even){ background-color:transparent;}
+
+#body-wrap #wrap .ms-account-wrapper  table tbody tr > *, 
+#body-wrap #wrap .ms-account-wrapper  table thead tr > *,
+
+#body-wrap #wrap [class*="ms-subscription-"] table tbody tr > *, 
+#body-wrap #wrap [class*="ms-subscription-"] table thead tr > * { padding-left:15px; padding-right:15px;}
+
+#body-wrap #wrap .ms-account-wrapper  table tr > *:first-child,
+#body-wrap #wrap [class*="ms-subscription-"] table tr > *:first-child { padding-left:0;}
+
+#body-wrap #wrap .ms-account-wrapper  table tr > *:last-child,
+#body-wrap #wrap [class*="ms-subscription-"] table tr > *:last-child { padding-right:0;}
+
+#body-wrap #wrap .ms-account-wrapper  table tbody tr:last-child > *,
+#body-wrap #wrap [class*="ms-subscription-"] table tbody tr:last-child > * { border-bottom:none; padding-bottom:0;}
+
+#account-profile table tr > *:last-child { text-align:right;}
+#account-profile table tbody tr:first-child > * { border-bottom:1px solid rgba(215,215,215,1.0)} 
+#account-membership h2 { margin-bottom:12px;}
+#account-profile th { color:rgba(34,34,34,1.0);}
+
+.ms-account-wrapper + br { display:none;}
+
+@media(max-width:680px){
+	#body-wrap #wrap .ms-account-wrapper  table,
+	#body-wrap #wrap .ms-account-wrapper  table tbody,
+	#body-wrap #wrap .ms-account-wrapper  table thead,
+	#body-wrap #wrap .ms-account-wrapper  table tfoot,
+	#body-wrap #wrap .ms-account-wrapper  table tr,
+	#body-wrap #wrap .ms-account-wrapper  table td,
+	#body-wrap #wrap .ms-account-wrapper  table th,
+	#body-wrap #wrap .ms-account-wrapper  table tbody tr > *, 
+	#body-wrap #wrap .ms-account-wrapper  table thead tr > *,
+	
+	#body-wrap #wrap [class*="ms-subscription-"] table,
+	#body-wrap #wrap [class*="ms-subscription-"] table tbody,
+	#body-wrap #wrap [class*="ms-subscription-"] table thead,
+	#body-wrap #wrap [class*="ms-subscription-"] table tfoot,
+	#body-wrap #wrap [class*="ms-subscription-"] table tr,
+	#body-wrap #wrap [class*="ms-subscription-"] table td,
+	#body-wrap #wrap [class*="ms-subscription-"] table th,
+	#body-wrap #wrap [class*="ms-subscription-"] table tbody tr > *, 
+	#body-wrap #wrap [class*="ms-subscription-"] table thead tr > * { display:block; width:100%; padding-left:0; padding-right:0; text-align:left;}
+	
+	#body-wrap #wrap .ms-account-wrapper  table tbody tr,
+	#body-wrap #wrap [class*="ms-subscription-"] table tbody tr { border-bottom:1px solid rgba(215,215,215,1.0);}
+	
+	#body-wrap #wrap .ms-account-wrapper  table tbody tr:last-child,
+	#body-wrap #wrap [class*="ms-subscription-"] table tbody tr:last-child {border-bottom:none;}
+	
+	#body-wrap #wrap .ms-account-wrapper  table td,
+	#body-wrap #wrap [class*="ms-subscription-"] table td { border:none;}
+	
+	#body-wrap #wrap .ms-account-wrapper  table td:empty,
+	#body-wrap #wrap [class*="ms-subscription-"] table td:empty { display:none;}
+}
+
+.ms-login-form #loginform{ margin:0;}
+.ms-login-form #loginform p input { margin:0;}
+.ms-login-form #loginform .nav { float:right;}
+.ms-login-form #loginform .login-remember {float:left;}
+.ms-login-form #loginform .login-remember > * { display:inline-block; vertical-align:middle; margin-bottom:0;}
+.ms-login-form #loginform .login-submit { text-align:left; clear:both;}
+.ms-login-form #loginform .login-submit:before{content:''; display:table; clear:both;}
+.ms-login-form ~ a { float:right; margin-top:-40px;}
+
+.ms-membership-form-wrapper .ms-alert-box { box-shadow:none; -webkit-box-shadow:none; background-color:rgba(221,221,221,0.3); border:none; color:rgba(0,0,0,1.00);}
+.ms-signup .ms-cancel-button{display: block;width: 100%; background: none; padding: 10px 0; text-decoration: none; text-transform: uppercase; color: #9a9a9a;}
+.ms-signup .ms-cancel-button:hover{background:none}
+
+.ms-membership-details-wrapper.horizontal{border-radius: 4px; border-radius: 7px; box-shadow: 0px 0px 0px 8px #F8F8F8; margin-bottom:46px; display:table}
+.ms-membership-details-wrapper.horizontal .ms-price-details{display:table-cell; background: #FFF; border-right: 1px solid #CCC; min-height: 230px; width: 68%; padding: 32px 29px; vertical-align:top}
+.ms-membership-details-wrapper.horizontal .ms-price-details .ms-description{padding: 0}
+.ms-membership-details-wrapper.horizontal .ms-price-details h4{margin-bottom: 15px}
+.ms-membership-details-wrapper.horizontal .ms-bottom-bar{display:table-cell; background: none; width: 32%; padding:20px 40px}
+.ms-membership-details-wrapper.horizontal:after{content:' ';clear:both}
+.ms-membership-details-wrapper.horizontal{background:#F8F8F8}
+.ms-membership-details-wrapper.horizontal .ms-price { font-size:60px; color:rgba(34,34,34,1.0); font-weight:bold; text-align:center; line-height:1; padding-top:28px; padding-bottom:11px; }
+.ms-membership-details-wrapper.horizontal .ms-signup-button{margin-bottom:20px}
+
+@media(max-width:414px){
+    /* since ip6 plus */
+    .ms-membership-details-wrapper.horizontal{display:block}
+    .ms-membership-details-wrapper.horizontal .ms-price-details{display:block;width:100%}
+    .ms-membership-details-wrapper.horizontal .ms-bottom-bar{display:block;width:100%}
+}
+
+.alert .ms-membership{padding:3px 5px;color:#FFF}
+
+.dark-schema .ms-membership-form-wrapper legend{color: #FFF}
+.dark-schema .ms-membership-form-wrapper .ms-alert-box{color: #FFF; box-shadow: none; -webkit-box-shadow: none;}
+.dark-schema .ms-account-wrapper > * h2 a,.dark-schema .ms-account-wrapper > * h2 a{background: #000;    color: #8a8a8a;    border-color: #2b2b2b;}
+.dark-schema #account-profile th{color: #FFF}
+.dark-schema #account-invoices table:not(#wp-calendar) thead tr:first-child, .dark-schema #account-activity table:not(#wp-calendar) thead tr:first-child{color:#FFF}
+.dark-schema .ms-account-wrapper > *, .dark-schema #account-profile table:not(#wp-calendar) tbody tr:first-child > *, .dark-schema table:not(#wp-calendar) thead tr:first-child > *, .dark-schema table:not(#wp-calendar) tbody tr > *{border-color: rgb(51,51,51); color: #FFF}
+.ms-alert-box{text-shadow: none}
