@@ -1,0 +1,384 @@
+#!/usr/bin/env python3
+"""Set up an existing Directus instance as backend for the gdxlabs.com site.
+
+Creates (idempotently, safe to run again):
+  * collection gdxlabs_news                    - news posts shown on /blog/
+  * collection gdxlabs_newsletter_subscribers  - sign-ups from the newsletter form
+  * file folder "gdxlabs-news"                 - cover images of news posts
+  * public permissions: read published news and their images, create subscribers
+  * role/policy "GDX Labs Redaktion"           - write news, manage subscribers
+  * optionally an editor user, an import of the existing blog posts, and
+    js/gdx-directus-config.js for the static site
+
+Works with Directus 10 (role based permissions) and 11 (policies).
+Only uses the Python standard library.
+
+Example:
+  DIRECTUS_TOKEN=<admin static token> python3 tools/directus_setup.py \\
+      --url https://cms.example.com --write-config js/gdx-directus-config.js \\
+      --editor-email redaktion@gdxlabs.com --editor-password '...' --import-posts .
+"""
+import argparse, glob, html as htmllib, json, mimetypes, os, re, sys, uuid
+import urllib.error, urllib.parse, urllib.request
+
+NEWS = "gdxlabs_news"
+SUBSCRIBERS = "gdxlabs_newsletter_subscribers"
+FOLDER = "gdxlabs-news"
+EDITOR = "GDX Labs Redaktion"
+EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+PUBLIC_NEWS_FIELDS = ["id", "title", "slug", "summary", "content", "cover_image", "date_published"]
+SUBSCRIBE_FIELDS = ["name", "email", "source"]
+
+
+class Directus:
+    def __init__(self, url, token):
+        self.url, self.token = url.rstrip("/"), token
+
+    def request(self, method, path, body=None, headers=None, raw=None):
+        data = raw if raw is not None else (json.dumps(body).encode() if body is not None else None)
+        h = {"Authorization": f"Bearer {self.token}"} if self.token else {}
+        if raw is None and body is not None:
+            h["Content-Type"] = "application/json"
+        h.update(headers or {})
+        req = urllib.request.Request(self.url + path, data=data, method=method, headers=h)
+        try:
+            with urllib.request.urlopen(req) as r:
+                text = r.read().decode()
+                return json.loads(text).get("data") if text else None
+        except urllib.error.HTTPError as e:
+            raise DirectusError(e.code, method, path, e.read().decode(errors="replace")) from None
+
+    def get(self, path, **params):
+        query = urllib.parse.urlencode({k: json.dumps(v) if isinstance(v, (dict, list)) else v for k, v in params.items()})
+        return self.request("GET", path + ("?" + query if query else ""))
+
+    def post(self, path, body):
+        return self.request("POST", path, body)
+
+    def patch(self, path, body):
+        return self.request("PATCH", path, body)
+
+    def login(self, email, password):
+        self.token = None
+        self.token = self.post("/auth/login", {"email": email, "password": password})["access_token"]
+
+    def upload(self, file_path, folder, title):
+        boundary = uuid.uuid4().hex
+        parts = []
+        for name, value in (("folder", folder), ("title", title)):
+            parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"\r\n\r\n{value}\r\n'.encode())
+        mime = mimetypes.guess_type(file_path)[0] or "application/octet-stream"
+        parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{os.path.basename(file_path)}"\r\n'
+                     f"Content-Type: {mime}\r\n\r\n".encode() + open(file_path, "rb").read() + b"\r\n")
+        parts.append(f"--{boundary}--\r\n".encode())
+        return self.request("POST", "/files", raw=b"".join(parts),
+                            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
+
+
+class DirectusError(Exception):
+    def __init__(self, status, method, path, body):
+        super().__init__(f"{method} {path} -> HTTP {status}: {body[:500]}")
+        self.status = status
+
+
+def log(msg):
+    print(msg, flush=True)
+
+
+# --- schema -----------------------------------------------------------------
+
+def pk_field():
+    return {"field": "id", "type": "integer", "meta": {"hidden": True, "readonly": True, "interface": "input"},
+            "schema": {"is_primary_key": True, "has_auto_increment": True}}
+
+
+def choice(text, value, color):
+    return {"text": text, "value": value, "color": color}
+
+
+NEWS_FIELDS = [
+    {"field": "status", "type": "string", "schema": {"default_value": "draft", "is_nullable": False},
+     "meta": {"interface": "select-dropdown", "display": "labels", "width": "half", "sort": 2,
+              "options": {"choices": [choice("Veröffentlicht", "published", "#2ECDA7"), choice("Entwurf", "draft", "#A2B5CD"),
+                                      choice("Archiviert", "archived", "#F7971C")]},
+              "display_options": {"choices": [choice("Veröffentlicht", "published", "#2ECDA7"), choice("Entwurf", "draft", "#A2B5CD"),
+                                              choice("Archiviert", "archived", "#F7971C")]}}},
+    {"field": "date_published", "type": "timestamp", "schema": {},
+     "meta": {"interface": "datetime", "display": "datetime", "width": "half", "sort": 3,
+              "note": "Datum, das auf der Website angezeigt wird; die News-Liste ist danach sortiert"}},
+    {"field": "title", "type": "string", "schema": {"is_nullable": False},
+     "meta": {"interface": "input", "required": True, "width": "full", "sort": 4}},
+    {"field": "slug", "type": "string", "schema": {"is_unique": True},
+     "meta": {"interface": "input", "options": {"slug": True, "trim": True}, "width": "half", "sort": 5,
+              "note": "Teil der URL: /blog/?post=<slug>. Leer lassen, dann wird die ID verwendet"}},
+    {"field": "cover_image", "type": "uuid", "schema": {},
+     "meta": {"interface": "file-image", "display": "image", "special": ["file"], "width": "half", "sort": 6,
+              "options": {"folder": None}}},
+    {"field": "summary", "type": "text", "schema": {},
+     "meta": {"interface": "input-multiline", "width": "full", "sort": 7, "note": "Kurztext für die News-Liste"}},
+    {"field": "content", "type": "text", "schema": {},
+     "meta": {"interface": "input-rich-text-html", "display": "formatted-value", "width": "full", "sort": 8}},
+    {"field": "date_created", "type": "timestamp", "schema": {},
+     "meta": {"special": ["date-created"], "interface": "datetime", "readonly": True, "hidden": True, "width": "half"}},
+    {"field": "date_updated", "type": "timestamp", "schema": {},
+     "meta": {"special": ["date-updated"], "interface": "datetime", "readonly": True, "hidden": True, "width": "half"}},
+]
+
+SUBSCRIBER_FIELDS = [
+    {"field": "email", "type": "string", "schema": {"is_nullable": False, "is_unique": True},
+     "meta": {"interface": "input", "required": True, "width": "half", "sort": 2,
+              "validation": {"_and": [{"email": {"_regex": EMAIL_REGEX}}]},
+              "validation_message": "Bitte eine gültige E-Mail-Adresse angeben"}},
+    {"field": "name", "type": "string", "schema": {},
+     "meta": {"interface": "input", "width": "half", "sort": 3}},
+    {"field": "status", "type": "string", "schema": {"default_value": "subscribed", "is_nullable": False},
+     "meta": {"interface": "select-dropdown", "display": "labels", "width": "half", "sort": 4,
+              "options": {"choices": [choice("Angemeldet", "subscribed", "#2ECDA7"), choice("Abgemeldet", "unsubscribed", "#A2B5CD")]},
+              "display_options": {"choices": [choice("Angemeldet", "subscribed", "#2ECDA7"), choice("Abgemeldet", "unsubscribed", "#A2B5CD")]}}},
+    {"field": "source", "type": "string", "schema": {},
+     "meta": {"interface": "input", "readonly": True, "width": "half", "sort": 5, "note": "Seite, auf der das Formular abgeschickt wurde"}},
+    {"field": "date_created", "type": "timestamp", "schema": {},
+     "meta": {"special": ["date-created"], "interface": "datetime", "display": "datetime", "readonly": True, "width": "half", "sort": 6}},
+]
+
+
+def ensure_collection(api, name, meta, fields):
+    existing = {c["collection"] for c in api.get("/collections")}
+    if name not in existing:
+        api.post("/collections", {"collection": name, "meta": meta, "schema": {}, "fields": [pk_field()]})
+        log(f"+ collection {name}")
+    else:
+        log(f"= collection {name}")
+    have = {f["field"] for f in api.get(f"/fields/{name}")}
+    for field in fields:
+        if field["field"] not in have:
+            api.post(f"/fields/{name}", field)
+            log(f"  + field {field['field']}")
+
+
+def ensure_file_relation(api):
+    rels = api.get(f"/relations/{NEWS}") or []
+    if not any(r["field"] == "cover_image" for r in rels):
+        api.post("/relations", {"collection": NEWS, "field": "cover_image", "related_collection": "directus_files",
+                                "schema": {"on_delete": "SET NULL"}})
+        log("  + relation cover_image -> directus_files")
+
+
+def ensure_folder(api):
+    folders = api.get("/folders", filter={"name": {"_eq": FOLDER}}, fields="id")
+    if folders:
+        return folders[0]["id"]
+    log(f"+ folder {FOLDER}")
+    return api.post("/folders", {"name": FOLDER})["id"]
+
+
+# --- access control -----------------------------------------------------------
+
+class Access:
+    """Permission targets: a policy (Directus 11) or a role (Directus 10)."""
+
+    def __init__(self, api):
+        self.api = api
+        try:
+            api.get("/policies", limit=1)
+            self.v11 = True
+        except DirectusError as e:
+            if e.status not in (403, 404):
+                raise
+            self.v11 = False
+        log(f"Directus {'11+ (policies)' if self.v11 else '10 (roles)'} erkannt")
+
+    def public(self):
+        if not self.v11:
+            return None  # role = null is the public role in Directus 10
+        rows = self.api.get("/access", filter={"_and": [{"role": {"_null": True}}, {"user": {"_null": True}}]}, fields="policy")
+        if not rows:
+            sys.exit("Keine Public-Policy gefunden (directus_access ohne Rolle/User)")
+        return rows[0]["policy"]
+
+    def editor(self):
+        roles = self.api.get("/roles", filter={"name": {"_eq": EDITOR}}, fields="id")
+        role = roles[0]["id"] if roles else None
+        if not self.v11:
+            if not role:
+                role = self.api.post("/roles", {"name": EDITOR, "icon": "edit_note", "app_access": True, "admin_access": False})["id"]
+                log(f"+ role {EDITOR}")
+            return role, role
+        policies = self.api.get("/policies", filter={"name": {"_eq": EDITOR}}, fields="id")
+        policy = policies[0]["id"] if policies else None
+        if not policy:
+            policy = self.api.post("/policies", {"name": EDITOR, "icon": "edit_note", "app_access": True, "admin_access": False})["id"]
+            log(f"+ policy {EDITOR}")
+        if not role:
+            role = self.api.post("/roles", {"name": EDITOR, "icon": "edit_note"})["id"]
+            log(f"+ role {EDITOR}")
+        if not self.api.get("/access", filter={"_and": [{"role": {"_eq": role}}, {"policy": {"_eq": policy}}]}, fields="id"):
+            self.api.post("/access", {"role": role, "policy": policy})
+        return role, policy
+
+    def grant(self, label, target, collection, action, fields=("*",), permissions=None, presets=None):
+        key = "policy" if self.v11 else "role"
+        match = {"_null": True} if target is None else {"_eq": target}
+        body = {"collection": collection, "action": action, "fields": list(fields),
+                "permissions": permissions or {}, "validation": {}, "presets": presets or {}}
+        existing = self.api.get("/permissions", fields="id", filter={
+            "_and": [{"collection": {"_eq": collection}}, {"action": {"_eq": action}}, {key: match}]})
+        if existing:
+            self.api.patch(f"/permissions/{existing[0]['id']}", body)
+        else:
+            self.api.post("/permissions", dict(body, **{key: target}))
+        log(f"  {'~' if existing else '+'} {label}: {action} {collection}")
+
+
+def setup_permissions(api, access, folder_id):
+    public = access.public()
+    log("Public-Zugriff:")
+    access.grant("public", public, NEWS, "read", PUBLIC_NEWS_FIELDS, permissions={"status": {"_eq": "published"}})
+    access.grant("public", public, "directus_files", "read", permissions={"folder": {"_eq": folder_id}})
+    access.grant("public", public, SUBSCRIBERS, "create", SUBSCRIBE_FIELDS, presets={"status": "subscribed"})
+    role, editor = access.editor()
+    log(f"{EDITOR}:")
+    for action in ("create", "read", "update", "delete"):
+        access.grant("editor", editor, NEWS, action)
+        access.grant("editor", editor, "directus_files", action)
+    for action in ("read", "update", "delete"):
+        access.grant("editor", editor, SUBSCRIBERS, action)
+    access.grant("editor", editor, "directus_folders", "read")
+    return role
+
+
+def ensure_editor_user(api, role, email, password):
+    users = api.get("/users", filter={"email": {"_eq": email}}, fields="id")
+    if users:
+        api.patch(f"/users/{users[0]['id']}", {"role": role})
+        log(f"= user {email} (Rolle gesetzt)")
+    else:
+        api.post("/users", {"email": email, "password": password, "role": role, "status": "active"})
+        log(f"+ user {email}")
+
+
+# --- import of the existing static blog posts ------------------------------------
+
+def inner_div(html, start):
+    """HTML inside the <div> that starts at index start (balanced on nested divs)."""
+    open_end = html.index(">", start) + 1
+    depth = 1
+    for m in re.finditer(r"<div\b|</div>", html[open_end:]):
+        depth += 1 if m.group(0) != "</div>" else -1
+        if depth == 0:
+            return html[open_end:open_end + m.start()]
+    return html[open_end:]
+
+
+def read_post(path, site_dir):
+    html = open(path, encoding="utf-8").read()
+    title = re.search(r'<h1 class="single-title entry-title">(.*?)</h1>', html, re.S)
+    date = re.search(r'<time datetime="([^"]+)"', html)
+    body = html.find('<div class="body-content')
+    image = re.search(r'<meta property="og:image" content="([^"]+)"', html)
+    content = inner_div(html, body) if body != -1 else ""
+    # make image/link paths root-relative so they work from /blog/
+    content = re.sub(r'(src|href|srcset)="(?:\.\./)+', r'\1="/', content)
+    content = re.sub(r",\s*(?:\.\./)+", ", /", content)
+    content = re.sub(r"\s+", " ", content).strip()
+    cover = None
+    if image:
+        local = os.path.normpath(os.path.join(os.path.dirname(path), image.group(1)))
+        if os.path.isfile(local) and local.startswith(os.path.abspath(site_dir)):
+            cover = local
+    text = re.sub(r"\s+", " ", htmllib.unescape(re.sub(r"<[^>]+>", " ", content))).strip()
+    summary = text if len(text) <= 240 else text[:240].rsplit(" ", 1)[0] + " …"
+    return {"title": htmllib.unescape(re.sub(r"<[^>]+>", "", title.group(1))).strip() if title else os.path.basename(os.path.dirname(path)),
+            "slug": os.path.basename(os.path.dirname(path)), "date_published": date.group(1) if date else None,
+            "content": content, "summary": summary, "cover": cover}
+
+
+def import_posts(api, site_dir, folder_id, status):
+    site_dir = os.path.abspath(site_dir)
+    posts = sorted(glob.glob(os.path.join(site_dir, "20[0-9][0-9]/[0-9][0-9]/*/index.html")))
+    existing = {i["slug"] for i in api.get(f"/items/{NEWS}", fields="slug", limit=-1)}
+    for path in posts:
+        post = read_post(path, site_dir)
+        if post["slug"] in existing:
+            log(f"= news {post['slug']}")
+            continue
+        cover = post.pop("cover")
+        if cover:
+            post["cover_image"] = api.upload(cover, folder_id, post["title"])["id"]
+        api.post(f"/items/{NEWS}", dict(post, status=status))
+        log(f"+ news {post['slug']} ({status})")
+
+
+# --- checks / output -------------------------------------------------------------
+
+def check_cors(url, origins):
+    for origin in origins:
+        req = urllib.request.Request(f"{url}/items/{NEWS}", method="OPTIONS", headers={
+            "Origin": origin, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "content-type"})
+        try:
+            with urllib.request.urlopen(req) as r:
+                allowed = r.headers.get("Access-Control-Allow-Origin")
+        except urllib.error.HTTPError as e:
+            allowed = e.headers.get("Access-Control-Allow-Origin")
+        except urllib.error.URLError:
+            allowed = None
+        if allowed in (origin, "*"):
+            log(f"CORS ok für {origin}")
+        else:
+            log(f"! CORS: {origin} ist nicht freigegeben. In der Directus-Umgebung setzen:\n"
+                f"    CORS_ENABLED=true\n    CORS_ORIGIN={','.join(origins)}\n  und Directus neu starten.")
+            return
+
+
+def write_config(path, url):
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("/* Generated by tools/directus_setup.py */\n"
+                "window.GDX_DIRECTUS = " + json.dumps({"url": url, "news": NEWS, "subscribers": SUBSCRIBERS}, indent=2) + ";\n")
+    log(f"Frontend-Konfiguration geschrieben: {path}")
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    p.add_argument("--url", default=os.environ.get("DIRECTUS_URL"), help="Directus base URL (or DIRECTUS_URL)")
+    p.add_argument("--token", default=os.environ.get("DIRECTUS_TOKEN"), help="admin static token (or DIRECTUS_TOKEN)")
+    p.add_argument("--email", default=os.environ.get("DIRECTUS_EMAIL"), help="admin login instead of a token")
+    p.add_argument("--password", default=os.environ.get("DIRECTUS_PASSWORD"))
+    p.add_argument("--editor-email", help="create/update a user with the editor role")
+    p.add_argument("--editor-password", default=os.environ.get("DIRECTUS_EDITOR_PASSWORD"))
+    p.add_argument("--import-posts", metavar="SITE_DIR", help="import the static site's blog posts as news items")
+    p.add_argument("--import-status", default="draft", choices=["draft", "published"], help="status of imported posts")
+    p.add_argument("--write-config", metavar="PATH", help="write the frontend config (js/gdx-directus-config.js)")
+    p.add_argument("--origin", action="append", default=[], help="site origin to check CORS for (repeatable)")
+    a = p.parse_args()
+    if not a.url or not (a.token or (a.email and a.password)):
+        p.error("--url und --token (oder --email/--password) werden benötigt")
+    if a.editor_email and not a.editor_password:
+        p.error("--editor-email braucht --editor-password (oder DIRECTUS_EDITOR_PASSWORD)")
+
+    api = Directus(a.url, a.token)
+    if not a.token:
+        api.login(a.email, a.password)
+    if not api.get("/users/me", fields="role.admin_access,admin_access"):
+        sys.exit("Login fehlgeschlagen")
+
+    ensure_collection(api, NEWS, {"icon": "newspaper", "note": "News für gdxlabs.com (/blog/)", "display_template": "{{title}}",
+                                  "archive_field": "status", "archive_value": "archived", "unarchive_value": "draft",
+                                  "sort_field": None}, NEWS_FIELDS)
+    ensure_file_relation(api)
+    ensure_collection(api, SUBSCRIBERS, {"icon": "mark_email_read", "note": "Newsletter-Anmeldungen von gdxlabs.com",
+                                         "display_template": "{{email}}"}, SUBSCRIBER_FIELDS)
+    folder_id = ensure_folder(api)
+    role = setup_permissions(api, Access(api), folder_id)
+    if a.editor_email:
+        ensure_editor_user(api, role, a.editor_email, a.editor_password)
+    if a.import_posts:
+        import_posts(api, a.import_posts, folder_id, a.import_status)
+    if a.write_config:
+        write_config(a.write_config, api.url)
+    check_cors(api.url, a.origin or ["https://www.gdxlabs.com", "https://gdxlabs.com"])
+    log("Fertig.")
+
+
+if __name__ == "__main__":
+    main()
