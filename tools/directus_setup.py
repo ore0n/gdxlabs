@@ -4,10 +4,13 @@
 Creates (idempotently, safe to run again):
   * collection gdxlabs_news                    - news posts shown on /blog/
   * collection gdxlabs_newsletter_subscribers  - sign-ups from the newsletter form
+  * collection gdxlabs_contact_messages        - messages from the contact form
   * file folder "gdxlabs-news"                 - cover images of news posts
-  * public permissions: read published news and their images, create subscribers
-  * role/policy "GDX Labs Redaktion"           - write news, manage subscribers
-  * optionally an editor user, an import of the existing blog posts, and
+  * public permissions: read published news and their images, create
+    subscribers and contact messages (but not read them)
+  * role/policy "GDX Labs Redaktion"           - write news, manage subscribers and messages
+  * optionally an editor user, an e-mail notification for new contact
+    messages, an import of the existing blog posts, and
     js/gdx-directus-config.js for the static site
 
 Works with Directus 10 (role based permissions) and 11 (policies).
@@ -16,18 +19,22 @@ Only uses the Python standard library.
 Example:
   DIRECTUS_TOKEN=<admin static token> python3 tools/directus_setup.py \\
       --url https://cms.example.com --write-config js/gdx-directus-config.js \\
-      --editor-email redaktion@gdxlabs.com --editor-password '...' --import-posts .
+      --editor-email redaktion@gdxlabs.com --editor-password '...' --import-posts . \\
+      --notify-email office@gdxlabs.com
 """
 import argparse, glob, html as htmllib, json, mimetypes, os, re, sys, uuid
 import urllib.error, urllib.parse, urllib.request
 
 NEWS = "gdxlabs_news"
 SUBSCRIBERS = "gdxlabs_newsletter_subscribers"
+MESSAGES = "gdxlabs_contact_messages"
+NOTIFY_FLOW = "GDX Labs: Benachrichtigung Kontaktformular"
 FOLDER = "gdxlabs-news"
 EDITOR = "GDX Labs Redaktion"
 EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 PUBLIC_NEWS_FIELDS = ["id", "title", "slug", "summary", "content", "cover_image", "date_published"]
 SUBSCRIBE_FIELDS = ["name", "email", "source"]
+MESSAGE_FIELDS_PUBLIC = ["name", "email", "subject", "message", "source"]
 
 
 class Directus:
@@ -142,6 +149,32 @@ SUBSCRIBER_FIELDS = [
 ]
 
 
+MESSAGE_FIELDS = [
+    {"field": "status", "type": "string", "schema": {"default_value": "new", "is_nullable": False},
+     "meta": {"interface": "select-dropdown", "display": "labels", "width": "half", "sort": 2,
+              "options": {"choices": [choice("Neu", "new", "#E35169"), choice("Beantwortet", "answered", "#2ECDA7"),
+                                      choice("Archiviert", "archived", "#A2B5CD")]},
+              "display_options": {"choices": [choice("Neu", "new", "#E35169"), choice("Beantwortet", "answered", "#2ECDA7"),
+                                              choice("Archiviert", "archived", "#A2B5CD")]}}},
+    {"field": "date_created", "type": "timestamp", "schema": {},
+     "meta": {"special": ["date-created"], "interface": "datetime", "display": "datetime", "readonly": True, "width": "half", "sort": 3}},
+    {"field": "name", "type": "string", "schema": {"is_nullable": False},
+     "meta": {"interface": "input", "required": True, "readonly": True, "width": "half", "sort": 4}},
+    {"field": "email", "type": "string", "schema": {"is_nullable": False},
+     "meta": {"interface": "input", "required": True, "readonly": True, "width": "half", "sort": 5,
+              "validation": {"_and": [{"email": {"_regex": EMAIL_REGEX}}]},
+              "validation_message": "Bitte eine gültige E-Mail-Adresse angeben"}},
+    {"field": "subject", "type": "string", "schema": {},
+     "meta": {"interface": "input", "readonly": True, "width": "full", "sort": 6}},
+    {"field": "message", "type": "text", "schema": {"is_nullable": False},
+     "meta": {"interface": "input-multiline", "required": True, "readonly": True, "width": "full", "sort": 7}},
+    {"field": "source", "type": "string", "schema": {},
+     "meta": {"interface": "input", "readonly": True, "width": "half", "sort": 8, "note": "Seite, auf der das Formular abgeschickt wurde"}},
+    {"field": "notes", "type": "text", "schema": {},
+     "meta": {"interface": "input-multiline", "width": "full", "sort": 9, "note": "Interne Notizen der Redaktion"}},
+]
+
+
 def ensure_collection(api, name, meta, fields):
     existing = {c["collection"] for c in api.get("/collections")}
     if name not in existing:
@@ -236,6 +269,7 @@ def setup_permissions(api, access, folder_id):
     access.grant("public", public, NEWS, "read", PUBLIC_NEWS_FIELDS, permissions={"status": {"_eq": "published"}})
     access.grant("public", public, "directus_files", "read", permissions={"folder": {"_eq": folder_id}})
     access.grant("public", public, SUBSCRIBERS, "create", SUBSCRIBE_FIELDS, presets={"status": "subscribed"})
+    access.grant("public", public, MESSAGES, "create", MESSAGE_FIELDS_PUBLIC, presets={"status": "new"})
     role, editor = access.editor()
     log(f"{EDITOR}:")
     for action in ("create", "read", "update", "delete"):
@@ -243,6 +277,7 @@ def setup_permissions(api, access, folder_id):
         access.grant("editor", editor, "directus_files", action)
     for action in ("read", "update", "delete"):
         access.grant("editor", editor, SUBSCRIBERS, action)
+        access.grant("editor", editor, MESSAGES, action)
     access.grant("editor", editor, "directus_folders", "read")
     return role
 
@@ -255,6 +290,25 @@ def ensure_editor_user(api, role, email, password):
     else:
         api.post("/users", {"email": email, "password": password, "role": role, "status": "active"})
         log(f"+ user {email}")
+
+
+def ensure_notification(api, recipients):
+    """Flow that mails every new contact message to the given addresses."""
+    flows = api.get("/flows", filter={"name": {"_eq": NOTIFY_FLOW}}, fields="id,operation")
+    flow = flows[0] if flows else api.post("/flows", {
+        "name": NOTIFY_FLOW, "icon": "mail", "status": "active", "trigger": "event", "accountability": "all",
+        "options": {"type": "action", "scope": ["items.create"], "collections": [MESSAGES]}})
+    mail = {"to": recipients, "type": "markdown", "subject": "Neue Nachricht über gdxlabs.com: {{$trigger.payload.subject}}",
+            "body": "**Von:** {{$trigger.payload.name}} ({{$trigger.payload.email}})\n\n"
+                    "**Betreff:** {{$trigger.payload.subject}}\n\n{{$trigger.payload.message}}"}
+    if flow.get("operation"):
+        api.patch(f"/operations/{flow['operation']}", {"options": mail})
+        log(f"= flow {NOTIFY_FLOW} (Empfänger: {', '.join(recipients)})")
+    else:
+        op = api.post("/operations", {"flow": flow["id"], "key": "mail", "name": "E-Mail senden", "type": "mail",
+                                      "position_x": 19, "position_y": 1, "options": mail})
+        api.patch(f"/flows/{flow['id']}", {"operation": op["id"]})
+        log(f"+ flow {NOTIFY_FLOW} (Empfänger: {', '.join(recipients)})")
 
 
 # --- import of the existing static blog posts ------------------------------------
@@ -333,8 +387,8 @@ def check_cors(url, origins):
 def write_config(path, url):
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        f.write("/* Generated by tools/directus_setup.py */\n"
-                "window.GDX_DIRECTUS = " + json.dumps({"url": url, "news": NEWS, "subscribers": SUBSCRIBERS}, indent=2) + ";\n")
+        f.write("/* Generated by tools/directus_setup.py (--write-config). */\n"
+                "window.GDX_DIRECTUS = " + json.dumps({"url": url, "news": NEWS, "subscribers": SUBSCRIBERS, "messages": MESSAGES}, indent=2) + ";\n")
     log(f"Frontend-Konfiguration geschrieben: {path}")
 
 
@@ -346,6 +400,8 @@ def main():
     p.add_argument("--password", default=os.environ.get("DIRECTUS_PASSWORD"))
     p.add_argument("--editor-email", help="create/update a user with the editor role")
     p.add_argument("--editor-password", default=os.environ.get("DIRECTUS_EDITOR_PASSWORD"))
+    p.add_argument("--notify-email", action="append", default=[], metavar="ADDRESS",
+                   help="mail new contact messages to this address (repeatable; needs EMAIL_* set up in Directus)")
     p.add_argument("--import-posts", metavar="SITE_DIR", help="import the static site's blog posts as news items")
     p.add_argument("--import-status", default="draft", choices=["draft", "published"], help="status of imported posts")
     p.add_argument("--write-config", metavar="PATH", help="write the frontend config (js/gdx-directus-config.js)")
@@ -368,10 +424,16 @@ def main():
     ensure_file_relation(api)
     ensure_collection(api, SUBSCRIBERS, {"icon": "mark_email_read", "note": "Newsletter-Anmeldungen von gdxlabs.com",
                                          "display_template": "{{email}}"}, SUBSCRIBER_FIELDS)
+    ensure_collection(api, MESSAGES, {"icon": "contact_mail", "note": "Nachrichten aus dem Kontaktformular von gdxlabs.com",
+                                      "display_template": "{{name}}: {{subject}}", "sort_field": None,
+                                      "archive_field": "status", "archive_value": "archived", "unarchive_value": "new"},
+                      MESSAGE_FIELDS)
     folder_id = ensure_folder(api)
     role = setup_permissions(api, Access(api), folder_id)
     if a.editor_email:
         ensure_editor_user(api, role, a.editor_email, a.editor_password)
+    if a.notify_email:
+        ensure_notification(api, a.notify_email)
     if a.import_posts:
         import_posts(api, a.import_posts, folder_id, a.import_status)
     if a.write_config:

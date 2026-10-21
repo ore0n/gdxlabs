@@ -1,7 +1,8 @@
 """Hook js/gdx-directus.js into the static pages.
 
 Adds the scripts to every page with the newsletter form (Contact Form 7 #482)
-and turns the empty WordPress "Blog" page into the Directus news feed.
+or the contact form (#212) and turns the empty WordPress "Blog" page into the
+Directus news feed.
 
 Usage: python3 -I tools/add_directus_frontend.py <site_dir>
 """
@@ -22,7 +23,7 @@ for d, _, fs in os.walk(ROOT):
         page = os.path.join(d, f)
         s = open(page, encoding="utf-8").read()
         is_blog = os.path.relpath(page, ROOT) == os.path.join("blog", "index.html")
-        if MARKER in s or not ("wpcf7-f482" in s or is_blog):
+        if MARKER in s or not ("wpcf7-f482" in s or "wpcf7-f212" in s or is_blog):
             continue
         scripts = (f'<script src="{rel(page, "js/gdx-directus-config.js")}"></script>\n'
                    f'<script src="{rel(page, MARKER)}"></script>\n')

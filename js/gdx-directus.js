@@ -1,4 +1,4 @@
-/* News feed (/blog/) and newsletter sign-up backed by Directus.
+/* News feed (/blog/), newsletter sign-up and contact form backed by Directus.
    Collections and permissions are created by tools/directus_setup.py,
    the URL comes from js/gdx-directus-config.js. */
 (function () {
@@ -7,7 +7,6 @@
   var cfg = window.GDX_DIRECTUS;
   if (!cfg || !cfg.url) return;
   var API = cfg.url.replace(/\/$/, '');
-  var NEWSLETTER_FORM_ID = '482';
   var PAGE_SIZE = 10;
   var LIST_FIELDS = 'id,slug,title,summary,cover_image,date_published';
 
@@ -122,7 +121,31 @@
     if (key) showPost(newsRoot, key); else showList(newsRoot);
   }
 
-  /* ---- newsletter ---- */
+  /* ---- forms (Contact Form 7 markup, Directus instead of WordPress) ---- */
+
+  var FORMS = {
+    // newsletter in the sidebar
+    '482': {
+      collection: cfg.subscribers,
+      fields: { name: 'your-name', email: 'your-email' },
+      required: ['name', 'email'],
+      // an address that is already on the list gets the same answer as a new one
+      duplicateOk: true,
+      invalid: 'Bitte Name und eine gültige E-Mail-Adresse angeben.',
+      success: 'Danke! Du bist für unseren Newsletter angemeldet.',
+      failure: 'Die Anmeldung hat leider nicht geklappt. Bitte versuch es später noch einmal.'
+    },
+    // contact page
+    '212': {
+      collection: cfg.messages || 'gdxlabs_contact_messages',
+      fields: { name: 'your-name', email: 'your-email', subject: 'your-subject', message: 'your-message' },
+      required: ['name', 'email', 'message'],
+      duplicateOk: false,
+      invalid: 'Bitte Name, eine gültige E-Mail-Adresse und eine Nachricht angeben.',
+      success: 'Danke für deine Nachricht! Wir melden uns so bald wie möglich.',
+      failure: 'Die Nachricht konnte leider nicht gesendet werden. Bitte versuch es später noch einmal.'
+    }
+  };
 
   function respond(form, ok, message) {
     var out = form.querySelector('.wpcf7-response-output');
@@ -136,39 +159,43 @@
   document.addEventListener('submit', function (event) {
     var form = event.target;
     var marker = form.querySelector('input[name="_wpcf7"]');
-    if (!marker || marker.value !== NEWSLETTER_FORM_ID) return;
+    var spec = marker && FORMS[marker.value];
+    if (!spec) return;
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    var name = (form.querySelector('[name="your-name"]') || {}).value || '';
-    var email = ((form.querySelector('[name="your-email"]') || {}).value || '').trim();
-    if (!name.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      respond(form, false, 'Bitte Name und eine gültige E-Mail-Adresse angeben.');
+    var data = { source: location.pathname };
+    Object.keys(spec.fields).forEach(function (key) {
+      var input = form.querySelector('[name="' + spec.fields[key] + '"]');
+      data[key] = input ? input.value.trim() : '';
+    });
+    var complete = spec.required.every(function (key) { return data[key]; });
+    if (!complete || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) {
+      respond(form, false, spec.invalid);
       return;
     }
     var submit = form.querySelector('[type="submit"]');
     if (submit) submit.disabled = true;
 
-    fetch(API + '/items/' + cfg.subscribers, {
+    fetch(API + '/items/' + spec.collection, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.trim(), email: email, source: location.pathname })
+      body: JSON.stringify(data)
     })
       .then(function (r) {
         if (r.ok) return true;
         return r.json().then(function (body) {
-          // an address that is already on the list gets the same answer as a new one
           var code = body && body.errors && body.errors[0] && body.errors[0].extensions && body.errors[0].extensions.code;
-          if (code === 'RECORD_NOT_UNIQUE') return true;
+          if (spec.duplicateOk && code === 'RECORD_NOT_UNIQUE') return true;
           throw new Error(code || 'HTTP ' + r.status);
         });
       })
       .then(function () {
         form.reset();
-        respond(form, true, 'Danke! Du bist für unseren Newsletter angemeldet.');
+        respond(form, true, spec.success);
       })
       .catch(function () {
-        respond(form, false, 'Die Anmeldung hat leider nicht geklappt. Bitte versuch es später noch einmal.');
+        respond(form, false, spec.failure);
       })
       .then(function () {
         if (submit) submit.disabled = false;
