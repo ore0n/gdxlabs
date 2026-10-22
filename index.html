@@ -1,515 +1,164 @@
-<!DOCTYPE html>
-<!--[if IE 7]>
-<html class="ie ie7" lang="en-US">
-<![endif]-->
-<!--[if IE 8]>
-<html class="ie ie8" lang="en-US">
-<![endif]-->
-<!--[if !(IE 7) | !(IE 8)  ]>-->
-<html lang="en-US">
-<!--<![endif]--><head>
-<meta charset="UTF-8">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="profile" href="http://gmpg.org/xfn/11">
-<meta name="description" content="Games and Visuals"/><title>GdxLabs &#8211; Games and Visuals</title>
-<meta name='robots' content='noindex,follow' />
-<link rel='dns-prefetch' href='https://fonts.googleapis.com/' />
-<link rel='dns-prefetch' href='https://s.w.org/' />
-<script type="text/javascript">
-			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/test.exagine.com\/wp-includes\/js\/wp-emoji-release.min.js"}};
-			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
-		</script>
-		<style type="text/css">
-img.wp-smiley,
-img.emoji {
-	display: inline !important;
-	border: none !important;
-	box-shadow: none !important;
-	height: 1em !important;
-	width: 1em !important;
-	margin: 0 .07em !important;
-	vertical-align: -0.1em !important;
-	background: none !important;
-	padding: 0 !important;
-}
-</style>
-<link rel='stylesheet' id='contact-form-7-css'  href='wp-content/plugins/contact-form-7/includes/css/styles.css' type='text/css' media='all' />
-<link rel='stylesheet' id='mashmenu-css-css'  href='wp-content/themes/videopro/inc/megamenu/css/mashmenu.css' type='text/css' media='all' />
-<link rel='stylesheet' id='font-awesome-2-css'  href='wp-content/themes/videopro/css/font-awesome/css/font-awesome.min.css' type='text/css' media='all' />
-<link rel='stylesheet' id='slick-css'  href='wp-content/themes/videopro/css/slick.css' type='text/css' media='all' />
-<link rel='stylesheet' id='malihu-scroll-css'  href='wp-content/themes/videopro/css/jquery.mCustomScrollbar.min.css' type='text/css' media='all' />
-<link rel='stylesheet' id='videopro-style-css'  href='wp-content/themes/videopro/style.css' type='text/css' media='all' />
-<link rel='stylesheet' id='videopro-membership-css'  href='wp-content/themes/videopro/css/membership.css' type='text/css' media='all' />
-<link rel='stylesheet' id='videopro-google-fonts-css'  href='https://fonts.googleapis.com/css?family=Source+Code+Pro%3A+400%2C500%2C600' type='text/css' media='all' />
-<link rel='stylesheet' id='ct-priority-nav-css'  href='wp-content/plugins/videopro-shortcodes/shortcodes/js/priority-nav/priority-nav-core.css' type='text/css' media='all' />
-<link rel='stylesheet' id='ct_shortcode_style-css'  href='wp-content/plugins/videopro-shortcodes/shortcodes/css/shortcode.css' type='text/css' media='all' />
-<style id='ct_shortcode_style-inline-css' type='text/css'>
-@media only screen and (-webkit-min-device-pixel-ratio: 2),(min-resolution: 192dpi) {
-					/* Retina Logo */
-					.primary-header .cactus-logo.navigation-font a{background:url(wp-content/uploads/2016/09/Logo-gdx2-inv.png) no-repeat center; background-size:contain;}
-					.primary-header .cactus-logo.navigation-font a img{ opacity:0; visibility:hidden}
-				}img.gform_ajax_spinner{background:url(wp-content/themes/videopro/images/ajax-loader.gif);}.bg-m-color-1, .btn-default.bt-style-1:visited:not(:hover), button.bt-style-1:visited:not(:hover), input[type=button].bt-style-1:visited:not(:hover), input[type=submit].bt-style-1:visited:not(:hover), .btn-default.subscribe, .cactus-nav-style-3 .cactus-only-main-menu .cactus-main-menu > ul > li:hover > a:after, .cactus-nav-style-5 .cactus-open-left-sidebar.right-logo.cactus-main-menu > ul > li > a.active > span, .ct-sub-w-title, .slider-toolbar-carousel .cactus-listing-config.style-2 .cactus-post-item.active .entry-content:before, .cactus-post-format-playlist .cactus-post-item.active:after, .channel-menu .channel-menu-item.active a:after, .easy-tab .tabs > li.active > a:after, .body-content .vc_tta.vc_general .vc_tta-tab.vc_active:after, .submitModal .textwidget .wpcf7 input[type="submit"]:not(:hover), .comming-soon-wrapper .wpcf7-form input[type="submit"]:not(:hover), #body-wrap .comming-soon-wrapper .gform_wrapper .gform_footer input.button:not(:hover), #body-wrap .comming-soon-wrapper .gform_wrapper .gform_footer input[type=submit]:not(:hover), .ct-shortcode-sliderv3.sliderv10 .slick-dots > li > button:hover, .ct-shortcode-sliderv3.sliderv10 .slick-dots > li.slick-active > button, .tab-control a.active:after, .ct-shortcode-sliderv3.sliderv8 .cactus-post-item.active:after, .btn-default.bt-style-1:not(:hover), button.bt-style-1:not(:hover), input[type=button].bt-style-1:not(:hover), input[type=submit].bt-style-1:not(:hover), .btn-default.bt-style-1:visited:not(:hover), button.bt-style-1:visited:not(:hover), input[type=button].bt-style-1:visited:not(:hover), input[type=submit].bt-style-1:visited:not(:hover),.cactus-nav-style-3 .cactus-only-main-menu .cactus-main-menu > ul > li.current-menu-ancestor > a:after, .cactus-nav-style-3 .cactus-only-main-menu .cactus-main-menu > ul > li.current-menu-item > a:after, .cactus-nav-style-3 .cactus-only-main-menu .cactus-main-menu > ul > li:hover > a:after,.item-review:before,.star-rating-block:before, .cactus-header-search-form .widget-asf .searchtext .suggestion ul li.active a,.cactus-header-search-form .widget-asf .searchtext .suggestion ul li a:hover, .btn-watch-later.added, #video_thumbnail_image .ct-icon-video.animated{background-color:#ff386d;}.m-color-1, body .wpcf7-response-output.wpcf7-mail-sent-ok, #body-wrap .gform_wrapper .validation_message,.item-review .box-text .score,.star-rating-block .rating-summary-block .rating-stars, .tml-profile-page .menu-items a.active {color:#ff386d;} .border-m-color-1, .cactus-main-menu > ul > li > ul li:first-child, .slider-toolbar-carousel .cactus-listing-config.style-2 .cactus-post-item.active .entry-content .picture-content > a:before {border-color:#ff386d}.svg-loading svg path, .svg-loading svg rect {fill:#ff386d;}.bg-m-color-2, .dark-div .textwidget .wpcf7 input[type="submit"]:not(:hover), .dark-div.textwidget .wpcf7 input[type="submit"]:not(:hover), #body-wrap .dark-div .textwidget .gform_wrapper .gform_footer input.button:not(:hover), #body-wrap .dark-div .textwidget .gform_wrapper .gform_footer input[type=submit]:not(:hover), #body-wrap .dark-div.textwidget .gform_wrapper .gform_footer input.button:not(:hover), #body-wrap .dark-div.textwidget .gform_wrapper .gform_footer input[type=submit]:not(:hover) {background-color:#fcf81b;}.m-color-2, .cactus-user-login.cactus-main-menu > ul > li > a {color:#fcf81b;} .border-m-color-2 {border-color:#fcf81b}.btn-default.bt-style-2, button.bt-style-2, input[type=button].bt-style-2, input[type=submit].bt-style-2, .btn-default.bt-style-2:visited, button.bt-style-2:visited, input[type=button].bt-style-2:visited, input[type=submit].bt-style-2:visited, .btn-default.subscribed, .textwidget .wpcf7 input[type="submit"]:not(:hover), #body-wrap .textwidget .gform_wrapper .gform_footer input.button:not(:hover), 
-	#body-wrap .textwidget .gform_wrapper .gform_footer input[type=submit]:not(:hover), .ct-compare-table-group .compare-table-title, .ct-compare-table-group .compare-table-option .btn:not(:hover) {background-color:#b9ff51;}body .wpcf7-response-output.wpcf7-mail-sent-ok, #body-wrap .gform_confirmation_message,.ct-compare-table-group .compare-table-price .price-wrap .price-number,.ct-compare-table-group .compare-table-item[data-special="1"] .price-wrap .currency, .ct-compare-table-group .compare-table-price .price-wrap .sub-price {color:#b9ff51;} body,.tooltip,.content-font{font-family:"Source Code Pro";}body,.tooltip,.content-font,.gallery-item,.cactus-nav-left > *:not(.navigation-font),.cactus-nav-right > *:not(.navigation-font),footer .cactus-container > .cactus-row > *,.cactus-listing-config.style-2 .cactus-post-item,footer .footer-info .link #menu-footer-menu li,.style-widget-popular-post.style-casting .cactus-post-item > .entry-content > *,.comments-area .comment-author > *,.submitModal .cat > .row > *,.login-to-vote .login-msg,.ct-shortcode-iconbox > *,.ct-shortcode-iconbox.style-2 > *,.ct-shortcode-promo.style-2 > *,.widget-asf .searchtext .suggestion,.wp-pagenavi > *,.cat-listing li{font-size:18px;}@media(max-width:1024px){.cactus-sidebar.ct-medium > .cactus-sidebar-content > *, .no-results.not-found .page-content{font-size:18px;}}@media(max-width:767px){#header-navigation .cactus-nav-control .cactus-header-search-form form input:not([type="submit"]),#header-navigation .cactus-nav-control .cactus-header-search-form form input:not([type="submit"]):focus{font-size:21px;}}.body-content figure.wp-caption .wp-caption-text,.comments-area .comment-awaiting-moderation,.submitModal .modal-body .wpcf7-form .note,#asf-search-filters > .filter-item,#asf-search-filters > .filter-item.tags-items > *,#asf-search-filters > .active-filter-items > *,.cactus-tooltip .tooltip-info{font-size:15px;}.navigation-font {font-size:16px;}.navigation-font.font-size-1{font-size:14px}.metadata-font,.metadata-font .font-size-1,.cactus-note.font-size-1:not(.heading-font),.ct-sub-w-title{font-size:14px}h1,.h1,.star-rating-block .rating-summary-block .rating-stars .point {font-size:36px}h2,.h2 {font-size:31px}h3,.h3 {font-size:27px}h4,.h4 {font-size:23px}h5,.h5 {font-size:21px}h6,.h6 {font-size:18px}#asf-search-filters > .filter-item .filter-heading,.widget_tag_cloud .tagcloud a[class*="tag-link-"]{font-size:15px}h3.font-size-2,h4.font-size-2,.cactus-point,.cactus-main-menu .dropdown-mega .channel-content .row .content-item .video-item .item-head h3,.cactus-main-menu .dropdown-mega .sub-menu-box-grid .columns li ul li.menu-item a,.cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title,.paging-navigation .nav-next a,.ct-series .series-content .series-content-row .series-content-item:last-child > * a,.body-content .vc_tta.vc_general .vc_tta-panel-title > a,.widget_categories li,.widget_meta li,.widget_archive li,.widget_recent_entries li,.widget_recent_comments li,.widget_pages li,.widget_nav_menu li,.widget_calendar caption,.btn-default:not(.video-tb),button,input[type=button],input[type=submit],.btn-default:visited,button:visited,input[type=button]:visited,input[type=submit]:visited,.ct-shortcode-sliderv3.sliderv8.slider11 .cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title,.widget_mostlikedpostswidget li,.widget_recentlylikedpostswidget li,.widget_widget_tptn_pop li{font-size:18px}@media(max-width:767px){.channel-banner .channel-banner-content .channel-title h1{font-size:18px;}}h3.font-size-3,.cactus-sidebar:not(.ct-medium) .widget .widget-title,.widget.style-4 .widget-inner .widget-title,.slider-toolbar-carousel .cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title,.easy-tab .tabs > li > a,.easy-tab .tabs > li.active > a,.body-content .vc_tta.vc_general .vc_tta-tab > a,.ct-shortcode-sliderv3.sliderv8 .cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title,.cactus-contents-block.style-3 .cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title, .cactus-contents-block.style-8 .cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title,.item-review .box-progress h5,.star-rating-block .criteria-title,.item-review .box-progress h5 .score{font-size:21px}h3.font-size-4,.cactus-main-menu .dropdown-mega .sub-menu-box-grid .columns li ul li.header,.cactus-contents-block.style-2 .cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title,.comments-area .comment-reply-title,.comments-area .comments-title,.ct-shortcode-sliderv3 .cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title,.ct-shortcode-sliderv3.sliderv8.sliderv8-sub .cactus-listing-config.style-2 .cactus-post-item > .entry-content .cactus-post-title,.item-review h4,.star-rating-block .rating-title,.slider-title{font-size:27px}h2.font-size-5,h3.font-size-5{font-size:26px}blockquote,.cactus-listing-config.style-2.shortcode-contentbox .cactus-post-item > .entry-content .cactus-post-title,.comming-soon-wrapper h1{font-size:31px}@media(max-width:767px){.content-big-layout h2,.comming-soon-wrapper .countdown-time .countdown-amount{font-size:31px}}h3.font-size-7,.cactus-point.big{font-size:42px}.content-big-layout h2,.item-review .box-text .score{font-size:80px}.cactus-post-item {
-    width:20% !important;
-    height: 220px;
-    overflow: hidden;
-}
-.cactus-post-item a{
-    height: 220px;
-}
-.gradient-elms{
-    top: 20%; 
-}
-.cactus-post-item:hover .gradient-elms{
-    top: 100%; 
-}
-.overlay{
-    top:-500px;
-    left:50px;
-    position:absolute;
-    z-index:40;
-}
-}
-</style>
-<link rel='stylesheet' id='videopro-lightbox-style-css'  href='wp-content/plugins/videopro-shortcodes/shortcodes/library/lightbox/lightbox.css' type='text/css' media='all' />
-<link rel='stylesheet' id='js_composer_front-css'  href='wp-content/plugins/js_composer/assets/css/js_composer.min.css' type='text/css' media='all' />
-<link rel='stylesheet' id='js_composer_custom_css-css'  href='wp-content/uploads/js_composer/custom.css' type='text/css' media='all' />
-<script type='text/javascript' src='wp-includes/js/jquery/jquery.js'></script>
-<script type='text/javascript' src='wp-includes/js/jquery/jquery-migrate.min.js'></script>
-<script type='text/javascript'>
-/* <![CDATA[ */
-var cactus = {"ajaxurl":"https:\/\/test.exagine.com\/wp-admin\/admin-ajax.php","video_pro_main_color":"#ff386d","query_vars":{"error":"","m":"","p":"393","post_parent":"","subpost":"","subpost_id":"","attachment":"","attachment_id":0,"name":"","static":"","pagename":"","page_id":"393","second":"","minute":"","hour":"","day":0,"monthnum":0,"year":0,"w":0,"category_name":"","tag":"","cat":"","tag_id":"","author":"","author_name":"","feed":"","tb":"","paged":0,"meta_key":"","meta_value":"","preview":"","s":"","sentence":"","title":"","fields":"","menu_order":"","embed":"","category__in":[],"category__not_in":[],"category__and":[],"post__in":[],"post__not_in":[],"post_name__in":[],"tag__in":[],"tag__not_in":[],"tag__and":[],"tag_slug__in":[],"tag_slug__and":[],"post_parent__in":[],"post_parent__not_in":[],"author__in":[],"author__not_in":[],"ignore_sticky_posts":false,"suppress_filters":false,"cache_results":true,"update_post_term_cache":true,"lazy_load_term_meta":true,"update_post_meta_cache":true,"post_type":"","posts_per_page":10,"nopaging":false,"comments_per_page":"50","no_found_rows":false,"order":"DESC"},"current_url":"https:\/\/test.exagine.com"};
-/* ]]> */
-</script>
-<script type='text/javascript' src='wp-content/themes/videopro/js/ajax.js'></script>
-<meta name="generator" content="WordPress 4.9.8" />
-<link rel="canonical" href="index.html" />
-<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
-		<meta name="generator" content="Powered by WPBakery Page Builder - drag and drop page builder for WordPress."/>
-<!--[if lte IE 9]><link rel="stylesheet" type="text/css" href="wp-content/plugins/js_composer/assets/css/vc_lte_ie9.min.css" media="screen"><![endif]-->		<style type="text/css" id="wp-custom-css">
-			/*
-You can add your own CSS here.
-
-Click the help icon above to learn more.
-*/
-
-.h4, h1, h2{
-	color: white;
-}
-
-.cactus-post-item a{
-	/*width: 150px;*/
-}
-
-.cactus-submit-video {
-display: none; 
-}
-
-div.cactus-main-menu.cactus-user-login.navigation-font {
-display: none; 
-}
-
-.widget-title{
-	font-size: 24px !important;
-	padding-top: 12px !important;
-	color: black !important;
-}
-
-.cactus-container .magin-20px{
-	background-color: white;
-	margin-bottom:20px !important;
-}
-.textwidget{
-	color:black;
-	font-size: 14.8px
-}
-.tag-cloud-link{
-	color:black !important;
-}
-
-.vc_column-inner{
-	margin-bottom: 0px;
-	margin-top: 0px;
-	padding-top: 0px !important;
-}		</style>
-	<style type="text/css" data-type="vc_shortcodes-custom-css">.vc_custom_1521791990523{padding-top: 35px !important;padding-right: 35px !important;padding-bottom: 35px !important;padding-left: 35px !important;}.vc_custom_1521791970307{padding-top: 35px !important;padding-right: 35px !important;padding-bottom: 35px !important;padding-left: 35px !important;}.vc_custom_1521792093766{margin-right: 30px !important;margin-left: 30px !important;}.vc_custom_1521792107538{margin-right: 30px !important;margin-left: 30px !important;padding-top: 25px !important;}.vc_custom_1528374287905{margin-right: 30px !important;margin-left: 30px !important;}.vc_custom_1522053177415{margin-right: 10px !important;margin-left: 10px !important;}.vc_custom_1520503992768{padding-left: 15px !important;}.vc_custom_1522057858746{padding-right: 15px !important;padding-left: 25px !important;}.vc_custom_1520468178023{margin-right: 15px !important;margin-left: 15px !important;}.vc_custom_1528381251738{padding-left: 300px !important;}</style><noscript><style type="text/css"> .wpb_animate_when_almost_visible { opacity: 1; }</style></noscript><script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/2.0.0/pixi.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.13.2/plugins/ColorPropsPlugin.min.js"></script>
-
+<title>GdxLabs</title>
+<meta name="description" content="We deliver games, mobile apps and web frontends as a team.">
+<link rel="icon" href="wp-content/uploads/2016/09/Logo-gdx3.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Source+Code+Pro:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/site.css">
 </head>
-<body class="home page-template page-template-page-templates page-template-front-page page-template-page-templatesfront-page-php page page-id-393 enable-sticky-menu  behavior-down sidebar-full layout-boxed wpb-js-composer js-comp-ver-5.5.2 vc_responsive">	
-<a name="top" style="height:0; position:absolute; top:0;" id="top"></a>
-<div id="body-wrap" data-background=" url(wp-content/uploads/2018/03/blink-board-7-1-e1528376528917.jpg) center top no-repeat scroll " class="cactus-box  ">
-    <div id="wrap">
-    	        <header id="header-navigation">
-        <div id="pixel-animate-container" >
-            <div class="canvas-container" >
-                <canvas id="logo-canvas" ></canvas>
-                <script src="wp-content/uploads/2018/03/pixelanimate-player.js"></script>
-                <script src="wp-content/uploads/2018/03/pixelanimate-data-2.js"></script>
-                
-            </div>
-        </div>
-        <div id="pixi-animate-container">
-            <script src="wp-content/uploads/2018/09/pixi-smoke.js"></script>
-        </div>
+<body>
+<canvas id="smoke" aria-hidden="true"></canvas>
 
-    	<!--Navigation style-->
-<div class="cactus-nav-control ">
-    
-		     <div class="cactus-nav-main dark-div  dark-bg-color-1" >
-        
-        <div class="cactus-container padding-30px ">
-            
-            <div class="cactus-row magin-30px">
-                
-                <!--nav left-->
-                <div class="cactus-nav-left">
-                    <!--logo-->
-                    <div class="cactus-logo navigation-font">
-                    	                        <a href="index.html">
-                        	<img src="wp-content/uploads/2016/09/gdxlabs_white.svg" alt="GdxLabs" title="GdxLabs" class="cactus-img-logo">
-                            
-                                                        <img src="wp-content/uploads/2018/03/gdxlabs_white.png" alt="GdxLabs" title="GdxLabs" class="cactus-img-logo cactus-img-sticky">
-                                                    </a>
-                    </div><!--logo-->
-                    
-                    <div class="cactus-main-menu cactus-open-left-sidebar right-logo navigation-font">
-                        <ul>
-                          <li><a href="javascript:;"><span></span><span></span><span></span></a></li>
-                        </ul>
-                    </div>
-                    					                </div> <!--nav left-->
-                
-                <!--nav right-->
-                <div class="cactus-nav-right">
-                    <div class="cactus-main-menu cactus-open-menu-mobile navigation-font">
-                        <ul>
-                          <li><a href="javascript:;"><i class="fas fa-bars"></i>MENU</a></li>
-                        </ul>
-                    </div>
-                    
-					                    <div class="cactus-main-menu cactus-user-login navigation-font">
-                        <ul>                	                 
-                            <li>   
-                                                                      
-                                    <a href="#"><i class="fas fa-user"></i>&nbsp;Login</a>
-                                                                                                </li>                                       
-                        </ul>
-                    </div>
-						
-                </div><!--nav right-->
-                                    <!--nav left-->
-                    <div class="cactus-nav-left cactus-only-main-menu">
-                         <!--main menu / megamenu / Basic dropdown-->                                  
-                        <div class="cactus-main-menu navigation-font">
-                        	                            <ul class="nav navbar-nav">
-                                <li id="mega-menu-item-1036" class=" menu-item menu-item-type-post_type menu-item-object-page level0 main-menu-item list-style"><a title="contact-us" href="contact-us/index.html">Contact Us</a></li><li id="mega-menu-item-1100" class=" menu-item menu-item-type-custom menu-item-object-custom level0 main-menu-item list-style"><a href="index.html#whatwedo">What We Do</a></li><li id="mega-menu-item-1101" class=" menu-item menu-item-type-custom menu-item-object-custom level0 main-menu-item list-style"><a href="index.html#whoweare">Who We Are</a></li><li id="mega-menu-item-1027" class=" menu-item menu-item-type-post_type menu-item-object-page level0 main-menu-item list-style"><a href="blog/index.html">News</a></li><li id="mega-menu-item-1103" class=" menu-item menu-item-type-custom menu-item-object-custom level0 main-menu-item list-style"><a href="index.html#career">Career</a></li>                           </ul>
-                                                   </div><!--main menu-->
-                    </div><!--nav left-->                                
-                            </div>
-            
-        </div>
-        
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="./"><img src="wp-content/uploads/2018/03/gdxlabs_white.png" alt="GdxLabs"></a>
+    <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" aria-label="Hauptmenü">
+      <ul>
+        <li><a href="contact-us/">Contact Us</a></li>
+        <li><a href="#whatwedo">What We Do</a></li>
+        <li><a href="#whoweare">Who We Are</a></li>
+        <li><a href="news/">News</a></li>
+        <li><a href="#career">Career</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" aria-label="GdxLabs">
+    <div class="stage">
+      <div class="screen"><canvas id="logo-canvas" aria-label="Animiertes GdxLabs-Logo"></canvas></div>
     </div>
-    
-</div>
-<!--Navigation style-->
+    <div class="hero-text">
+      <p>We deliver games, mobile apps and web frontends as a team.</p>
+      <a class="scroll-cue" href="#whatwedo">What We Do &darr;</a>
+    </div>
+  </section>
 
-
-        </header>
-        
-            <!--body content-->
-    <div id="cactus-body-container">
-    
-        <div class="cactus-sidebar-control   "> <!--sb-ct-medium, sb-ct-small-->
-        
-            <div class="cactus-container ">                        	
-                <div class="cactus-row">
-                                                            
-                    <div class="main-content-col">
-                        <div class="main-content-col-body">
-                        	<div class="single-page-content">
-                                                                <article class="cactus-single-content">                                	
-									<h2 class="hidden-title">Home</h2>                
-                                                                            
-<div class="single-page-content single-content"><!--Single Page Content-->
-    <article id="post-393" class="post-393 page type-page status-publish cactus-single-content">
-        <div class="body-content">
-            <!--Content-->
-            <div class="vc_row wpb_row vc_row-fluid"><div class="wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner "><div class="wpb_wrapper">
-	<div class="wpb_raw_code wpb_content_element wpb_raw_html" >
-		<div class="wpb_wrapper">
-			<div id="pixel-animate-container" >
-	<div class="canvas-container" >
-
-		<canvas id="logo-canvas" ></canvas>
-	<script src="wp-content/uploads/2018/03/pixelanimate-player.js"></script>
-<script src="wp-content/uploads/2018/03/pixelanimate-data.js"></script>
-</div>
-		</div>
-	</div>
-<div class="vc_row wpb_row vc_inner vc_row-fluid"><div class="overlay wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner "><div class="wpb_wrapper"><div class="vc_empty_space"   style="height: 150px" ><span class="vc_empty_space_inner"></span></div>
-</div></div></div></div></div></div></div><div class="wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner "><div class="wpb_wrapper">
-	<div class="wpb_raw_code wpb_content_element wpb_raw_html" >
-		<div class="wpb_wrapper">
-			<div id="whoweare">
-		</div>
-	</div>
-<div class="vc_separator wpb_content_element vc_separator_align_center vc_sep_width_100 vc_sep_pos_align_center vc_sep_color_grey 1 vc_separator-has-text" ><span class="vc_sep_holder vc_sep_holder_l"><span  class="vc_sep_line"></span></span><div 	class="vc_icon_element vc_icon_element-outer vc_icon_element-align-left">
-	<div class="vc_icon_element-inner vc_icon_element-color-grey vc_icon_element-size-md vc_icon_element-style- vc_icon_element-background-color-grey">
-		<span class="vc_icon_element-icon fa fa-users" ></span></div>
-</div>
-<h4>Who We Are</h4><span class="vc_sep_holder vc_sep_holder_r"><span  class="vc_sep_line"></span></span>
-</div>
-	<div class="wpb_raw_code wpb_content_element wpb_raw_html" >
-		<div class="wpb_wrapper">
-			</div>
-		</div>
-	</div>
-</div></div></div></div><div class="vc_row wpb_row vc_row-fluid"><div class="wpb_column vc_column_container vc_col-sm-6"><div class="vc_column-inner vc_custom_1521791990523"><div class="wpb_wrapper"><h2 style="color: #353535;text-align: left;font-family:Abril Fatface;font-weight:400;font-style:normal" class="vc_custom_heading vc_custom_1521792093766" >Team</h2>
-	<div class="wpb_text_column wpb_content_element  vc_custom_1521792107538" >
-		<div class="wpb_wrapper">
-			<p>We deliver games, mobile apps and web frontends as a team. Provided with fresh experience developing Backend-, Frontend-Solutions and UI-Designs. Technologies we use are ranging from Java, Php, C#, JS to CMS- and Use case specific technologies. Please contact us at admin@gdxlabs.com for detailed information.</p>
-
-		</div>
-	</div>
-</div></div></div><div class="wpb_column vc_column_container vc_col-sm-6"><div class="vc_column-inner vc_custom_1521791970307"><div class="wpb_wrapper">
-<!-- vc_grid start -->
-<div class="vc_grid-container-wrapper vc_clearfix" >
-	<div class="vc_grid-container vc_clearfix wpb_content_element vc_basic_grid vc_custom_1522053177415" data-initial-loading-animation="fadeIn" data-vc-grid-settings="{&quot;page_id&quot;:393,&quot;style&quot;:&quot;load-more&quot;,&quot;action&quot;:&quot;vc_get_vc_grid_data&quot;,&quot;shortcode_id&quot;:&quot;{\&quot;failed_to_get_id\&quot;:\&quot;vc_gid:1528381115268-41afe7f7-203e-7\&quot;}&quot;,&quot;items_per_page&quot;:&quot;3&quot;,&quot;btn_data&quot;:{&quot;title&quot;:&quot;Load more&quot;,&quot;style&quot;:&quot;classic&quot;,&quot;gradient_color_1&quot;:&quot;classic&quot;,&quot;gradient_color_2&quot;:&quot;classic&quot;,&quot;gradient_custom_color_1&quot;:&quot;classic&quot;,&quot;gradient_custom_color_2&quot;:&quot;classic&quot;,&quot;gradient_text_color&quot;:&quot;classic&quot;,&quot;custom_background&quot;:&quot;#ededed&quot;,&quot;custom_text&quot;:&quot;#666&quot;,&quot;outline_custom_color&quot;:&quot;#666&quot;,&quot;outline_custom_hover_background&quot;:&quot;#666&quot;,&quot;outline_custom_hover_text&quot;:&quot;#fff&quot;,&quot;shape&quot;:&quot;square&quot;,&quot;color&quot;:&quot;grey&quot;,&quot;size&quot;:&quot;md&quot;,&quot;align&quot;:&quot;center&quot;,&quot;button_block&quot;:&quot;true&quot;,&quot;add_icon&quot;:&quot;true&quot;,&quot;i_align&quot;:&quot;left&quot;,&quot;i_type&quot;:&quot;fontawesome&quot;,&quot;i_icon_fontawesome&quot;:&quot;fa fa-arrow-circle-o-down&quot;,&quot;i_icon_openiconic&quot;:&quot;vc-oi vc-oi-dial&quot;,&quot;i_icon_typicons&quot;:&quot;typcn typcn-adjust-brightness&quot;,&quot;i_icon_entypo&quot;:&quot;entypo-icon entypo-icon-note&quot;,&quot;i_icon_linecons&quot;:&quot;vc_li vc_li-heart&quot;,&quot;i_icon_monosocial&quot;:&quot;vc_li vc_li-heart&quot;,&quot;i_icon_material&quot;:&quot;vc_li vc_li-heart&quot;,&quot;i_icon_pixelicons&quot;:&quot;vc_pixel_icon vc_pixel_icon-alert&quot;,&quot;el_id&quot;:&quot;&quot;,&quot;custom_onclick&quot;:&quot;true&quot;,&quot;custom_onclick_code&quot;:&quot;&quot;},&quot;tag&quot;:&quot;vc_basic_grid&quot;}" data-vc-request="https://test.exagine.com/wp-admin/admin-ajax.php" data-vc-post-id="393" data-vc-public-nonce="d30d237e6d">
-		<div class="vc_grid vc_row vc_grid-gutter-15px vc_pageable-wrapper vc_hook_hover" data-vc-pageable-content="true"><div class="vc_pageable-slide-wrapper vc_clearfix" data-vc-grid-content="true"><div class="vc_grid-item vc_clearfix vc_col-sm-4"><div class="vc_grid-item-mini vc_clearfix "><div class="vc_gitem-animated-block  vc_gitem-animate vc_gitem-animate-blurScaleOut" data-vc-animation="blurScaleOut"><div class="vc_gitem-zone vc_gitem-zone-a vc-gitem-zone-height-mode-auto vc-gitem-zone-height-mode-auto-1-1">
-			<div class="vc_gitem-zone-mini">
-		<div class="vc_gitem_row vc_row vc_gitem-row-position-top"><div class="vc_col-sm-12 vc_gitem-col vc_gitem-col-align-"><div class="vc_custom_heading vc_gitem-post-data vc_gitem-post-data-source-post_title" ><h2 style="text-align: left" ><a href="2016/09/presentation/index.html" class="vc_gitem-link" title="Presentation">Presentation</a></h2></div></div></div><div class="vc_gitem_row vc_row vc_gitem-row-position-middle"><div class="vc_col-sm-12 vc_gitem-col vc_gitem-col-align-">
-	<div class="wpb_single_image wpb_content_element vc_align_center">
-		<figure class="wpb_wrapper vc_figure">
-			<a href="2016/09/presentation/index.html" class="vc_gitem-link vc_single_image-wrapper vc_box_shadow_circle vc_box_border_grey" title="Presentation"><img width="150" height="150" src="wp-content/uploads/2018/03/IMG_4919-darken-150x150.jpg" class="vc_single_image-img attachment-thumbnail" alt="" srcset="wp-content/uploads/2018/03/IMG_4919-darken-150x150.jpg 150w, wp-content/uploads/2018/03/IMG_4919-darken-50x50.jpg 50w, wp-content/uploads/2018/03/IMG_4919-darken-298x298.jpg 298w" sizes="(max-width: 150px) 100vw, 150px" /></a>
-		</figure>
-	</div>
-
-</div></div>	</div>
-</div>
-</div>
-</div><div class="vc_clearfix"></div></div><div class="vc_grid-item vc_clearfix vc_col-sm-4"><div class="vc_grid-item-mini vc_clearfix "><div class="vc_gitem-animated-block  vc_gitem-animate vc_gitem-animate-blurScaleOut" data-vc-animation="blurScaleOut"><div class="vc_gitem-zone vc_gitem-zone-a vc-gitem-zone-height-mode-auto vc-gitem-zone-height-mode-auto-1-1">
-			<div class="vc_gitem-zone-mini">
-		<div class="vc_gitem_row vc_row vc_gitem-row-position-top"><div class="vc_col-sm-12 vc_gitem-col vc_gitem-col-align-"><div class="vc_custom_heading vc_gitem-post-data vc_gitem-post-data-source-post_title" ><h2 style="text-align: left" ><a href="2016/09/carmen-jorda/index.html" class="vc_gitem-link" title="Game Design">Game Design</a></h2></div></div></div><div class="vc_gitem_row vc_row vc_gitem-row-position-middle"><div class="vc_col-sm-12 vc_gitem-col vc_gitem-col-align-">
-	<div class="wpb_single_image wpb_content_element vc_align_center">
-		<figure class="wpb_wrapper vc_figure">
-			<a href="2016/09/carmen-jorda/index.html" class="vc_gitem-link vc_single_image-wrapper vc_box_shadow_circle vc_box_border_grey" title="Game Design"><img width="150" height="150" src="wp-content/uploads/2016/09/IMG_4889-2-150x150.jpg" class="vc_single_image-img attachment-thumbnail" alt="" srcset="wp-content/uploads/2016/09/IMG_4889-2-150x150.jpg 150w, wp-content/uploads/2016/09/IMG_4889-2-300x300.jpg 300w, wp-content/uploads/2016/09/IMG_4889-2-768x768.jpg 768w, wp-content/uploads/2016/09/IMG_4889-2-1024x1024.jpg 1024w, wp-content/uploads/2016/09/IMG_4889-2-50x50.jpg 50w, wp-content/uploads/2016/09/IMG_4889-2-298x298.jpg 298w, wp-content/uploads/2016/09/IMG_4889-2.jpg 1552w" sizes="(max-width: 150px) 100vw, 150px" /></a>
-		</figure>
-	</div>
-
-</div></div>	</div>
-</div>
-</div>
-</div><div class="vc_clearfix"></div></div><div class="vc_grid-item vc_clearfix vc_col-sm-4"><div class="vc_grid-item-mini vc_clearfix "><div class="vc_gitem-animated-block  vc_gitem-animate vc_gitem-animate-blurScaleOut" data-vc-animation="blurScaleOut"><div class="vc_gitem-zone vc_gitem-zone-a vc-gitem-zone-height-mode-auto vc-gitem-zone-height-mode-auto-1-1">
-			<div class="vc_gitem-zone-mini">
-		<div class="vc_gitem_row vc_row vc_gitem-row-position-top"><div class="vc_col-sm-12 vc_gitem-col vc_gitem-col-align-"><div class="vc_custom_heading vc_gitem-post-data vc_gitem-post-data-source-post_title" ><h2 style="text-align: left" ><a href="2016/09/natalie-coughlin/index.html" class="vc_gitem-link" title="3D Art">3D Art</a></h2></div></div></div><div class="vc_gitem_row vc_row vc_gitem-row-position-middle"><div class="vc_col-sm-12 vc_gitem-col vc_gitem-col-align-">
-	<div class="wpb_single_image wpb_content_element vc_align_center">
-		<figure class="wpb_wrapper vc_figure">
-			<a href="2016/09/natalie-coughlin/index.html" class="vc_gitem-link vc_single_image-wrapper vc_box_shadow_circle vc_box_border_grey" title="3D Art"><img width="150" height="150" src="wp-content/uploads/2016/09/admin-ajax-150x150.jpg" class="vc_single_image-img attachment-thumbnail" alt="" srcset="wp-content/uploads/2016/09/admin-ajax-150x150.jpg 150w, wp-content/uploads/2016/09/admin-ajax-300x300.jpg 300w, wp-content/uploads/2016/09/admin-ajax-50x50.jpg 50w, wp-content/uploads/2016/09/admin-ajax-298x298.jpg 298w, wp-content/uploads/2016/09/admin-ajax.jpg 400w" sizes="(max-width: 150px) 100vw, 150px" /></a>
-		</figure>
-	</div>
-
-</div></div>	</div>
-</div>
-</div>
-</div><div class="vc_clearfix"></div></div></div><div class="vc_pageable-load-more-btn" data-vc-grid-load-more-btn="true">	<div class="vc_btn3-container  vc_grid-btn-load_more vc_btn3-center" >
-		<a href="javascript:;" class="vc_general vc_btn3 vc_btn3-size-md vc_btn3-shape-square vc_btn3-style-classic vc_btn3-block vc_btn3-icon-left vc_btn3-color-grey"  title="Load more"><i class="vc_btn3-icon fa fa-arrow-circle-o-down"></i> Load more</a></div>
-
-
-</div></div>	</div>
-</div><!-- vc_grid end -->
-</div></div></div></div><div class="vc_row wpb_row vc_row-fluid"><div class="wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner "><div class="wpb_wrapper">
-	<div class="wpb_raw_code wpb_content_element wpb_raw_html" >
-		<div class="wpb_wrapper">
-			<div id="whatwedo">
-		</div>
-	</div>
-<div class="vc_separator wpb_content_element vc_separator_align_center vc_sep_width_100 vc_sep_pos_align_center vc_sep_color_grey vc_separator-has-text" ><span class="vc_sep_holder vc_sep_holder_l"><span  class="vc_sep_line"></span></span><div 	class="vc_icon_element vc_icon_element-outer vc_icon_element-align-left">
-	<div class="vc_icon_element-inner vc_icon_element-color-grey vc_icon_element-size-md vc_icon_element-style- vc_icon_element-background-color-grey">
-		<span class="vc_icon_element-icon fa fa-briefcase" ></span></div>
-</div>
-<h4>What We Do</h4><span class="vc_sep_holder vc_sep_holder_r"><span  class="vc_sep_line"></span></span>
-</div>
-	<div class="wpb_raw_code wpb_content_element wpb_raw_html" >
-		<div class="wpb_wrapper">
-			</div>
-		</div>
-	</div>
-<div class="vc_empty_space"   style="height: 20px" ><span class="vc_empty_space_inner"></span></div>
-</div></div></div></div><div class="vc_row wpb_row vc_row-fluid"><div class="wpb_column vc_column_container vc_col-sm-6"><div class="vc_column-inner "><div class="wpb_wrapper"><div class="wpb_gallery wpb_content_element vc_clearfix vc_custom_1520503992768" ><div class="wpb_wrapper"><div class="wpb_gallery_slides wpb_flexslider flexslider_slide flexslider" data-interval="5" data-flex_fx="slide"><ul class="slides"><li><img class="" src="wp-content/uploads/2018/03/screen-oldforces-animated-trnasp-1-600x400.png" width="600" height="400" alt="screen-oldforces-animated-trnasp" title="screen-oldforces-animated-trnasp" /></li><li><img class="" src="wp-content/uploads/2018/03/new_characters-600x400.png" width="600" height="400" alt="new_characters" title="new_characters" /></li><li><img class="" src="wp-content/uploads/2018/03/3D-Konfigurator-600x400.png" width="600" height="400" alt="3D Konfigurator" title="3D Konfigurator" /></li></ul></div></div></div></div></div></div><div class="wpb_column vc_column_container vc_col-sm-6"><div class="vc_column-inner "><div class="wpb_wrapper"><div class="vc_separator wpb_content_element vc_separator_align_center vc_sep_width_60 vc_sep_shadow vc_sep_pos_align_center vc_separator_no_text vc_sep_color_grey" ><span class="vc_sep_holder vc_sep_holder_l"><span  class="vc_sep_line"></span></span><span class="vc_sep_holder vc_sep_holder_r"><span  class="vc_sep_line"></span></span>
-</div><!-- vc_grid start -->
-<div class="vc_grid-container-wrapper vc_clearfix" >
-	<div class="vc_grid-container vc_clearfix wpb_content_element vc_masonry_grid vc_custom_1522057858746" data-initial-loading-animation="fadeIn" data-vc-grid-settings="{&quot;page_id&quot;:393,&quot;style&quot;:&quot;all-masonry&quot;,&quot;action&quot;:&quot;vc_get_vc_grid_data&quot;,&quot;shortcode_id&quot;:&quot;{\&quot;failed_to_get_id\&quot;:\&quot;vc_gid:1528381115275-853cefec-d539-5\&quot;}&quot;,&quot;tag&quot;:&quot;vc_masonry_grid&quot;}" data-vc-request="https://test.exagine.com/wp-admin/admin-ajax.php" data-vc-post-id="393" data-vc-public-nonce="d30d237e6d">
-			</div>
-</div><!-- vc_grid end -->
-<div class="vc_separator wpb_content_element vc_separator_align_center vc_sep_width_60 vc_sep_shadow vc_sep_pos_align_center vc_separator_no_text vc_sep_color_grey" ><span class="vc_sep_holder vc_sep_holder_l"><span  class="vc_sep_line"></span></span><span class="vc_sep_holder vc_sep_holder_r"><span  class="vc_sep_line"></span></span>
-</div></div></div></div></div><div class="vc_row wpb_row vc_row-fluid"><div class="wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner "><div class="wpb_wrapper"><div class="vc_row wpb_row vc_inner vc_row-fluid"><div class="main-carousel wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner "><div class="wpb_wrapper"><!-- vc_grid start -->
-<div class="vc_grid-container-wrapper vc_clearfix" >
-	<div class="vc_grid-container vc_clearfix wpb_content_element vc_media_grid vc_custom_1520468178023" data-initial-loading-animation="none" data-vc-grid-settings="{&quot;page_id&quot;:393,&quot;style&quot;:&quot;all&quot;,&quot;action&quot;:&quot;vc_get_vc_grid_data&quot;,&quot;shortcode_id&quot;:&quot;{\&quot;failed_to_get_id\&quot;:\&quot;vc_gid:1528381115280-47cda2d8-a0cb-9\&quot;}&quot;,&quot;tag&quot;:&quot;vc_media_grid&quot;}" data-vc-request="https://test.exagine.com/wp-admin/admin-ajax.php" data-vc-post-id="393" data-vc-public-nonce="d30d237e6d">
-			</div>
-</div><!-- vc_grid end -->
-</div></div></div></div><div class="vc_empty_space"   style="height: 80px" ><span class="vc_empty_space_inner"></span></div>
-</div></div></div></div><div class="vc_row wpb_row vc_row-fluid"><div class="wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner "><div class="wpb_wrapper">
-	<div class="wpb_raw_code wpb_content_element wpb_raw_html" >
-		<div class="wpb_wrapper">
-			<div id="career">
-		</div>
-	</div>
-<div class="vc_separator wpb_content_element vc_separator_align_center vc_sep_width_100 vc_sep_pos_align_center vc_sep_color_grey vc_separator-has-text" ><span class="vc_sep_holder vc_sep_holder_l"><span  class="vc_sep_line"></span></span><div 	class="vc_icon_element vc_icon_element-outer vc_icon_element-align-left">
-	<div class="vc_icon_element-inner vc_icon_element-color-grey vc_icon_element-size-md vc_icon_element-style- vc_icon_element-background-color-grey">
-		<span class="vc_icon_element-icon fa fa-user" ></span></div>
-</div>
-<h4>Career</h4><span class="vc_sep_holder vc_sep_holder_r"><span  class="vc_sep_line"></span></span>
-</div>
-	<div class="wpb_raw_code wpb_content_element wpb_raw_html" >
-		<div class="wpb_wrapper">
-			</div>
-		</div>
-	</div>
-<div class="vc_empty_space"   style="height: 80px" ><span class="vc_empty_space_inner"></span></div>
-<!-- vc_grid start -->
-<div class="vc_grid-container-wrapper vc_clearfix" >
-	<div class="vc_grid-container vc_clearfix wpb_content_element vc_masonry_grid vc_custom_1528381251738" data-initial-loading-animation="fadeIn" data-vc-grid-settings="{&quot;page_id&quot;:393,&quot;style&quot;:&quot;all-masonry&quot;,&quot;action&quot;:&quot;vc_get_vc_grid_data&quot;,&quot;shortcode_id&quot;:&quot;{\&quot;failed_to_get_id\&quot;:\&quot;vc_gid:1528381115283-b21462eb-09af-8\&quot;}&quot;,&quot;tag&quot;:&quot;vc_masonry_grid&quot;}" data-vc-request="https://test.exagine.com/wp-admin/admin-ajax.php" data-vc-post-id="393" data-vc-public-nonce="d30d237e6d">
-			</div>
-</div><!-- vc_grid end -->
-<div class="vc_empty_space"   style="height: 60px" ><span class="vc_empty_space_inner"></span></div>
-</div></div></div></div>
-			            <!--Content-->
-            <div class="entry-footer">
-							</div><!-- .entry-footer -->
-        </div>
+  <section class="section" id="whatwedo">
+    <h2 class="section-title"><i class="fas fa-briefcase" aria-hidden="true"></i>What We Do</h2>
+    <div class="projects">
+      <figure class="project panel">
+        <img src="wp-content/uploads/2018/03/screen-oldforces-animated-trnasp-1-600x400.png" alt="Old Forces – Strategy Tower Defense online, Early Access" loading="lazy">
+        <figcaption>Old Forces</figcaption>
+      </figure>
+      <figure class="project panel">
+        <img src="wp-content/uploads/2018/03/new_characters-600x400.png" alt="New characters" loading="lazy">
+        <figcaption>New Characters</figcaption>
+      </figure>
+      <figure class="project panel">
+        <img src="wp-content/uploads/2018/03/3D-Konfigurator-600x400.png" alt="3D Konfigurator" loading="lazy">
+        <figcaption>3D Konfigurator</figcaption>
+      </figure>
+    </div>
+    <article class="feature panel">
+      <img src="wp-content/uploads/2016/09/foto-sculpting-workshop-graz-ragnitz.png" alt="3D sculpting and printing workshop" loading="lazy">
+      <div class="feature-body">
+        <h3>3Dprinting Meets chess</h3>
+        <p>Our 3d sculpting and printing workshop went well. The supports werent always… but in the end after several tries the print time could be significantly decreased</p>
+      </div>
     </article>
+  </section>
 
-</div>                                                    
-                                                                    </article>
-                                                            </div>
-                        </div>
-                    </div>
-                    
-                                        
-                </div>
-            </div>
-            
-        </div>                
-        
-        
-    </div><!--body content-->
+  <section class="section" id="whoweare">
+    <h2 class="section-title"><i class="fas fa-users" aria-hidden="true"></i>Who We Are</h2>
+    <div class="team">
+      <div class="team-intro panel">
+        <h3>Team</h3>
+        <p>We deliver games, mobile apps and web frontends as a team. Provided with fresh experience developing Backend-, Frontend-Solutions and UI-Designs. Technologies we use are ranging from Java, Php, C#, JS to CMS- and Use case specific technologies. Please contact us at <a href="mailto:admin@gdxlabs.com">admin@gdxlabs.com</a> for detailed information.</p>
+      </div>
+      <div class="members">
+        <article class="member panel">
+          <img src="wp-content/uploads/2016/09/Foto-03.08-1.jpg" alt="" loading="lazy">
+          <div><h4>Development</h4><p>Developer from Graz</p></div>
+        </article>
+        <article class="member panel">
+          <img src="wp-content/uploads/2016/09/IMG_4889-2-150x150.jpg" alt="" loading="lazy">
+          <div><h4>Game Design</h4><p>Daniel Leitinger, software developer from Graz, Austria is responsible for development and coordination.</p></div>
+        </article>
+        <article class="member panel">
+          <img src="wp-content/uploads/2016/09/admin-ajax-150x150.jpg" alt="" loading="lazy">
+          <div><h4>3D Art</h4><p>3D Artist from Vienna.</p></div>
+        </article>
+        <article class="member panel">
+          <img src="wp-content/uploads/2018/03/IMG_4919-darken-150x150.jpg" alt="" loading="lazy">
+          <div><h4>Presentation</h4><p></p></div>
+        </article>
+      </div>
+    </div>
+  </section>
 
-            <!--footer-->
-            <footer>
-            	<div class="footer-inner dark-div">
-                	                        <div class="footer-sidebar cactus-sidebar">
-                            <div class="cactus-container padding-20px">                        	
-                                <div class="cactus-row magin-20px">
-                                    <aside id="text-6" class="   widget module widget-col widget_text"><style>#text-6 .ct-sub-w-title{color:FFFFFF !important; background:FF0000 !important}</style><div class="widget-inner">			<div class="textwidget">		<ul class='nav navbar-nav navbar-right social-listing list-inline social-accounts'>
-						<li class="facebook"><a target='_blank' href="https://www.facebook.com/daniel.leitinger.92" title='Facebook'><i class="fab fa-facebook"></i></a></li>
-										<li class="youtube"><a target='_blank' href="https://www.youtube.com/user/b0unt1hunt4/" title='YouTube'><i class="fab fa-youtube"></i></a></li>
-										<li class="twitter"><a target='_blank' href="https://twitter.com/DanielLeitinger" title='Twitter'><i class="fab fa-twitter"></i></a></li>
-																<li class="google-plus"><a target='_blank' href="https://plus.google.com/u/0/102151762605312220621" title='Google Plus'><i class="fab fa-google-plus"></i></a></li>
-																					        		</ul>
-		</div>
-		</div></aside>                                </div>
-                            </div>
-                        </div>
-                                    </div>
-                
-                <div class="footer-info dark-div">
-                	<div class="cactus-container padding-20px">
-                    	<div class="cactus-row magin-20px">
-                        	<div class="copyright font-1">© 2018 GDXLabs. All rights reserved.</div>
-                            <div class="link font-1">
-                            	<div class="menu-footer-menu-container has-gototop">
-                                	<ul id="menu-footer-menu" class="menu">
-                                    	<li id="menu-item-599" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-599"><a href="impressum/index.html">Impressum</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                 </div>
-            </footer><!--footer-->
-                	</div>
-        
-                        
-        <!--Menu moblie-->
-        <div class="canvas-ovelay"></div>
-        <div id="off-canvas" class="off-canvas-default dark-div">
-          <div class="off-canvas-inner navigation-font">
-            <div class="close-canvas-menu"> <i class="fas fa-times"></i> CLOSE </div>
-            <nav class="off-menu">
-              <ul>                        	
-				  <li id="nav-menu-item-1036" class="main-menu-item menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"><a title="contact-us" href="contact-us/index.html" class="menu-link  main-menu-link">Contact Us </a></li>
-<li id="nav-menu-item-1100" class="main-menu-item menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom"><a href="index.html#whatwedo" class="menu-link  main-menu-link">What We Do </a></li>
-<li id="nav-menu-item-1101" class="main-menu-item menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom"><a href="index.html#whoweare" class="menu-link  main-menu-link">Who We Are </a></li>
-<li id="nav-menu-item-1027" class="main-menu-item menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"><a href="blog/index.html" class="menu-link  main-menu-link">News </a></li>
-<li id="nav-menu-item-1103" class="main-menu-item menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom"><a href="index.html#career" class="menu-link  main-menu-link">Career </a></li>
-                      
-              </ul>
-            </nav>
-          </div>
-        </div>
-        <!--Menu moblie-->
+  <section class="section" id="career">
+    <h2 class="section-title"><i class="fas fa-user" aria-hidden="true"></i>Career</h2>
+    <div class="jobs">
+      <article class="job panel" lang="de">
+        <h3>Web Developer</h3>
+        <h4>Aufgaben</h4>
+        <ul>
+          <li>Projektmitarbeit in Referenzprojekten</li>
+          <li>Strukturierung vorhandener Backendsysteme</li>
+          <li>Entwicklung eigener Apps und Softwareprodukte</li>
+        </ul>
+        <h4>Anforderungen</h4>
+        <ul>
+          <li>Java, PHP, Node, Angular</li>
+          <li>Selbstständige Arbeitsweise</li>
+        </ul>
+        <p class="apply">Schicken Sie Ihre Bewerbungsunterlagen bitte an <a href="mailto:admin@gdxlabs.com">admin@gdxlabs.com</a>.</p>
+      </article>
+      <article class="job panel" lang="de">
+        <h3>Social Media Manager</h3>
+        <h4>Aufgaben</h4>
+        <ul>
+          <li>Neu-/Umgestaltung von Social Media Auftritten</li>
+          <li>Werbekampagnen Planung/Umsetzung</li>
+          <li>Kundenkommunikation</li>
+        </ul>
+        <h4>Anforderungen</h4>
+        <ul>
+          <li>Kommunikativ (Deutsch, Englisch)</li>
+          <li>Selbstständige Arbeitsweise</li>
+        </ul>
+        <p class="apply">Schicken Sie Ihre Bewerbungsunterlagen bitte an <a href="mailto:admin@d-lean.com">admin@d-lean.com</a>.</p>
+      </article>
     </div>
-    
-        <div id="gototop" class="hidden">
-        <a href="index.html#top" title="To Top"><i class="fas fa-angle-up"></i></a>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <form class="form newsletter" method="post" action="#" novalidate>
+      <input type="hidden" name="_wpcf7" value="482">
+      <h2>Subscribe Email</h2>
+      <p class="lead" lang="de">Abonnieren Sie unseren Newsletter für Updates und aktuelle Informationen.</p>
+      <div class="fields">
+        <label>Your Name (required)<input type="text" name="your-name" autocomplete="name" required></label>
+        <label>Your Email (required)<input type="email" name="your-email" autocomplete="email" required></label>
+        <button class="btn" type="submit">Send</button>
+      </div>
+      <div class="wpcf7-response-output" role="status"></div>
+    </form>
+    <div>
+      <div class="social">
+        <a href="https://www.facebook.com/daniel.leitinger.92" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.youtube.com/user/b0unt1hunt4/" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="https://twitter.com/DanielLeitinger" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      </div>
+      <p class="legal">© 2018 GDXLabs. All rights reserved.<br><a href="http://shop.dl-software.at/content/impressumagb" target="_blank" rel="noopener">Impressum</a></p>
     </div>
-            <script>(function(d, s, id) {
-		  var js, fjs = d.getElementsByTagName(s)[0];
-		  if (d.getElementById(id)) return;
-		  js = d.createElement(s); js.id = id;
-		  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4";
-		  fjs.parentNode.insertBefore(js, fjs);
-		}(document, 'script', 'facebook-jssdk'));</script>   
-		<script type="text/javascript">
-		
-		  (function() {
-			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-			po.src = 'https://apis.google.com/js/platform.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-		  })();
-		</script>    
-        <link rel='stylesheet' id='font-awesome-css'  href='wp-content/plugins/js_composer/assets/lib/bower/font-awesome/css/font-awesome.min.css' type='text/css' media='all' />
-<link rel='stylesheet' id='vc_google_fonts_abril_fatfaceregular-css'  href='https://fonts.googleapis.com/css?family=Abril+Fatface%3Aregular' type='text/css' media='all' />
-<link rel='stylesheet' id='prettyphoto-css'  href='wp-content/plugins/js_composer/assets/lib/prettyphoto/css/prettyPhoto.min.css' type='text/css' media='all' />
-<link rel='stylesheet' id='vc_pageable_owl-carousel-css-css'  href='wp-content/plugins/js_composer/assets/lib/owl-carousel2-dist/assets/owl.min.css' type='text/css' media='all' />
-<link rel='stylesheet' id='animate-css-css'  href='wp-content/plugins/js_composer/assets/lib/bower/animate-css/animate.min.css' type='text/css' media='all' />
-<link rel='stylesheet' id='flexslider-css'  href='wp-content/plugins/js_composer/assets/lib/bower/flexslider/flexslider.min.css' type='text/css' media='all' />
-<script type='text/javascript'>
-/* <![CDATA[ */
-var wpcf7 = {"apiSettings":{"root":"https:\/\/test.exagine.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}}};
-/* ]]> */
-</script>
-<script type='text/javascript' src='wp-content/plugins/contact-form-7/includes/js/scripts.js'></script>
-<script type='text/javascript'>
-/* <![CDATA[ */
-var mashmenu = {"ajax_url":"https:\/\/test.exagine.com\/wp-admin\/admin-ajax.php","ajax_loader":"on","ajax_enabled":"0"};
-/* ]]> */
-</script>
-<script type='text/javascript' src='wp-content/themes/videopro/inc/megamenu/js/mashmenu.js'></script>
-<script type='text/javascript' src='wp-content/themes/videopro/js/smoothscroll.js'></script>
-<script type='text/javascript' src='wp-content/themes/videopro/js/bootstrap-lib.js'></script>
-<script type='text/javascript' src='wp-content/themes/videopro/js/slick.min.js'></script>
-<script type='text/javascript' src='wp-content/themes/videopro/js/jquery.mCustomScrollbar.concat.min.js'></script>
-<script type='text/javascript' src='wp-content/themes/videopro/js/js.cookie.js'></script>
-<script type='text/javascript' src='wp-content/themes/videopro/js/isotope.js'></script>
-<script type='text/javascript' src='wp-content/themes/videopro/js/template.js'></script>
-<script type='text/javascript' src='wp-content/plugins/videopro-shortcodes/shortcodes/js/priority-nav/priority-nav.min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/videopro-shortcodes/shortcodes/js/shortcode.js'></script>
-<script type='text/javascript' src='wp-content/plugins/videopro-shortcodes/shortcodes/library/lightbox/lightbox.js'></script>
-<script type='text/javascript' src='wp-content/plugins/videopro-shortcodes/shortcodes/library/touchswipe/jquery.touchSwipe.min.js'></script>
-<script type='text/javascript' src='wp-includes/js/wp-embed.min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/js_composer/assets/js/dist/js_composer_front.min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/js_composer/assets/lib/prettyphoto/js/jquery.prettyPhoto.min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/js_composer/assets/lib/owl-carousel2-dist/owl.carousel.min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/js_composer/assets/lib/bower/imagesloaded/imagesloaded.pkgd.min.js'></script>
-<script type='text/javascript' src='wp-includes/js/underscore.min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/js_composer/assets/lib/waypoints/waypoints.min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/js_composer/assets/js/dist/vc_grid.min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/js_composer/assets/lib/bower/flexslider/jquery.flexslider-min.js'></script>
-<script type='text/javascript' src='wp-content/plugins/js_composer/assets/lib/bower/masonry/dist/masonry.pkgd.min.js'></script>
-     
+  </div>
+</footer>
+
+<script src="wp-content/uploads/2018/03/pixelanimate-player.js"></script>
+<script src="wp-content/uploads/2018/03/pixelanimate-data.js"></script>
+<script src="js/smoke.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/gdx-directus-config.js"></script>
+<script src="js/gdx-directus.js"></script>
 </body>
 </html>

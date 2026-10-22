@@ -86,21 +86,9 @@ def replace_group_photo(stem):
         canvas.save(f, quality=88)
 
 
-def remove_group_photo_from_home():
-    path = os.path.join(ROOT, "index.html")
-    s = open(path, encoding="utf-8").read()
-    block = re.compile(r'\s*<div  class="wpb_single_image wpb_content_element[^"]*">\s*<figure class="wpb_wrapper vc_figure">'
-                       r'(?:(?!</figure>).)*?65EC33AF(?:(?!</figure>).)*?</figure>\s*</div>', re.S)
-    s, n = block.subn("", s)
-    if n:
-        open(path, "w", encoding="utf-8").write(s)
-    print("group photo blocks removed from home page:", n)
-
-
 for rel, boxes in FACES.items():
     blur_faces(os.path.join(UPLOADS, rel), boxes)
     print("blurred", rel)
 for stem in GROUP_PHOTOS:
     replace_group_photo(os.path.join(UPLOADS, stem))
     print("replaced", stem)
-remove_group_photo_from_home()

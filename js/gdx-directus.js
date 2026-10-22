@@ -1,4 +1,4 @@
-/* News feed (/blog/), newsletter sign-up and contact form backed by Directus.
+/* News feed (/news/), newsletter sign-up and contact form backed by Directus.
    Collections and permissions are created by tools/directus_setup.py,
    the URL comes from js/gdx-directus-config.js. */
 (function () {
