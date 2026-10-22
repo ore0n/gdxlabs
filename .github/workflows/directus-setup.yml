@@ -29,7 +29,7 @@ jobs:
         run: |
           args=(--write-config js/gdx-directus-config.js)
           if [ -n "$NOTIFY_EMAIL" ]; then args+=(--notify-email "$NOTIFY_EMAIL"); fi
-          if [ "$IMPORT_POSTS" = "true" ]; then args+=(--import-posts .); fi
+          if [ "$IMPORT_POSTS" = "true" ]; then args+=(--import-posts tools/legacy-posts.json); fi
           python3 tools/directus_setup.py "${args[@]}"
 
       - name: Commit frontend config
