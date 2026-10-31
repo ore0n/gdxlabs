@@ -9,6 +9,8 @@
   var API = cfg.url.replace(/\/$/, '');
   var PAGE_SIZE = 10;
   var LIST_FIELDS = 'id,slug,title,summary,cover_image,date_published';
+  // Directus also enforces this when it has a license; without one (core tier) only this filter hides drafts
+  var PUBLISHED = { status: { _eq: 'published' } };
 
   function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -66,7 +68,7 @@
     function load() {
       button.disabled = true;
       // one item more than shown tells whether another page exists
-      getItems({ fields: LIST_FIELDS, sort: '-date_published,-id', limit: PAGE_SIZE + 1, offset: offset })
+      getItems({ fields: LIST_FIELDS, filter: JSON.stringify(PUBLISHED), sort: '-date_published,-id', limit: PAGE_SIZE + 1, offset: offset })
         .then(function (items) {
           list.insertAdjacentHTML('beforeend', items.slice(0, PAGE_SIZE).map(renderCard).join(''));
           status.textContent = 'Noch keine News vorhanden.';
@@ -90,7 +92,7 @@
     var filter = /^\d+$/.test(key)
       ? { _or: [{ slug: { _eq: key } }, { id: { _eq: Number(key) } }] }
       : { slug: { _eq: key } };
-    getItems({ fields: LIST_FIELDS + ',content', filter: JSON.stringify(filter), limit: 1 })
+    getItems({ fields: LIST_FIELDS + ',content', filter: JSON.stringify({ _and: [PUBLISHED, filter] }), limit: 1 })
       .then(function (items) {
         var item = items[0];
         if (!item) {

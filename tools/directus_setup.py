@@ -13,7 +13,9 @@ Creates (idempotently, safe to run again):
     messages, an import of the old blog posts, and
     js/gdx-directus-config.js for the static site
 
-Works with Directus 10 (role based permissions) and 11 (policies).
+Works with Directus 10 (role based permissions) and 11+ (policies). An unlicensed
+Directus 12 (core tier) refuses the item rules above; --without-custom-rules sets
+up the same collections without them (see its help for what that exposes).
 Only uses the Python standard library.
 
 Example:
@@ -33,7 +35,7 @@ NOTIFY_FLOW = "GDX Labs: Benachrichtigung Kontaktformular"
 FOLDER = "gdxlabs-news"
 EDITOR = "GDX Labs Redaktion"
 EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
-PUBLIC_NEWS_FIELDS = ["id", "title", "slug", "summary", "content", "cover_image", "date_published"]
+PUBLIC_NEWS_FIELDS = ["id", "status", "title", "slug", "summary", "content", "cover_image", "date_published"]
 SUBSCRIBE_FIELDS = ["name", "email", "source"]
 MESSAGE_FIELDS_PUBLIC = ["name", "email", "subject", "message", "source"]
 
@@ -87,6 +89,7 @@ class DirectusError(Exception):
     def __init__(self, status, method, path, body):
         super().__init__(f"{method} {path} -> HTTP {status}: {body[:500]}")
         self.status = status
+        self.body = body
 
 
 def log(msg):
@@ -105,7 +108,8 @@ def choice(text, value, color):
 
 
 NEWS_FIELDS = [
-    {"field": "status", "type": "string", "schema": {"default_value": "draft", "is_nullable": False},
+    # content is written by an external publishing tool, so new items are live unless it says otherwise
+    {"field": "status", "type": "string", "schema": {"default_value": "published", "is_nullable": False},
      "meta": {"interface": "select-dropdown", "display": "labels", "width": "half", "sort": 2,
               "options": {"choices": [choice("Veröffentlicht", "published", "#2ECDA7"), choice("Entwurf", "draft", "#A2B5CD"),
                                       choice("Archiviert", "archived", "#F7971C")]},
@@ -183,11 +187,17 @@ def ensure_collection(api, name, meta, fields):
         log(f"+ collection {name}")
     else:
         log(f"= collection {name}")
-    have = {f["field"] for f in api.get(f"/fields/{name}")}
+    have = {f["field"]: f for f in api.get(f"/fields/{name}")}
     for field in fields:
-        if field["field"] not in have:
+        current = have.get(field["field"])
+        if not current:
             api.post(f"/fields/{name}", field)
             log(f"  + field {field['field']}")
+            continue
+        want = field["schema"].get("default_value")
+        if want is not None and (current.get("schema") or {}).get("default_value") != want:
+            api.patch(f"/fields/{name}/{field['field']}", {"schema": {"default_value": want}})
+            log(f"  ~ field {field['field']} (Standardwert {want})")
 
 
 def ensure_file_relation(api):
@@ -211,8 +221,10 @@ def ensure_folder(api):
 class Access:
     """Permission targets: a policy (Directus 11) or a role (Directus 10)."""
 
-    def __init__(self, api):
+    def __init__(self, api, custom_rules=True):
         self.api = api
+        # item rules and presets need a license on Directus 12 (not on the core tier)
+        self.custom_rules = custom_rules
         try:
             api.get("/policies", limit=1)
             self.v11 = True
@@ -253,8 +265,10 @@ class Access:
     def grant(self, label, target, collection, action, fields=("*",), permissions=None, presets=None):
         key = "policy" if self.v11 else "role"
         match = {"_null": True} if target is None else {"_eq": target}
+        if not self.custom_rules:
+            permissions = presets = None
         body = {"collection": collection, "action": action, "fields": list(fields),
-                "permissions": permissions or {}, "validation": {}, "presets": presets or {}}
+                "permissions": permissions or None, "validation": None, "presets": presets or None}
         existing = self.api.get("/permissions", fields="id", filter={
             "_and": [{"collection": {"_eq": collection}}, {"action": {"_eq": action}}, {key: match}]})
         if existing:
@@ -267,6 +281,8 @@ class Access:
 def setup_permissions(api, access, folder_id):
     public = access.public()
     log("Public-Zugriff:")
+    if not access.custom_rules:
+        log("  ! ohne eigene Regeln: Entwürfe sind über die API lesbar, alle Dateien der Instanz öffentlich")
     access.grant("public", public, NEWS, "read", PUBLIC_NEWS_FIELDS, permissions={"status": {"_eq": "published"}})
     access.grant("public", public, "directus_files", "read", permissions={"folder": {"_eq": folder_id}})
     access.grant("public", public, SUBSCRIBERS, "create", SUBSCRIBE_FIELDS, presets={"status": "subscribed"})
@@ -375,6 +391,9 @@ def main():
     p.add_argument("--import-status", default="draft", choices=["draft", "published"], help="status of imported posts")
     p.add_argument("--write-config", metavar="PATH", help="write the frontend config (js/gdx-directus-config.js)")
     p.add_argument("--origin", action="append", default=[], help="site origin to check CORS for (repeatable)")
+    p.add_argument("--without-custom-rules", action="store_true",
+                   help="for unlicensed Directus 12 (core tier): no item rules, so drafts become readable "
+                        "through the API and all files public")
     a = p.parse_args()
     if not a.url or not (a.token or (a.email and a.password)):
         p.error("--url und --token (oder --email/--password) werden benötigt")
@@ -388,7 +407,7 @@ def main():
         sys.exit("Login fehlgeschlagen")
 
     ensure_collection(api, NEWS, {"icon": "newspaper", "note": "News für gdxlabs.com (/news/)", "display_template": "{{title}}",
-                                  "archive_field": "status", "archive_value": "archived", "unarchive_value": "draft",
+                                  "archive_field": "status", "archive_value": "archived", "unarchive_value": "published",
                                   "sort_field": None}, NEWS_FIELDS)
     ensure_file_relation(api)
     ensure_collection(api, SUBSCRIBERS, {"icon": "mark_email_read", "note": "Newsletter-Anmeldungen von gdxlabs.com",
@@ -398,7 +417,14 @@ def main():
                                       "archive_field": "status", "archive_value": "archived", "unarchive_value": "new"},
                       MESSAGE_FIELDS)
     folder_id = ensure_folder(api)
-    role = setup_permissions(api, Access(api), folder_id)
+    try:
+        role = setup_permissions(api, Access(api, custom_rules=not a.without_custom_rules), folder_id)
+    except DirectusError as e:
+        if "custom_permission_rules_enabled" not in e.body:
+            raise
+        sys.exit("Diese Directus-Instanz erlaubt ohne Lizenz keine eigenen Berechtigungsregeln.\n"
+                 "Entweder eine Lizenz eintragen (kostenlos über https://directus.com/oig) und erneut starten,\n"
+                 "oder mit --without-custom-rules starten (Entwürfe dann über die API lesbar, alle Dateien öffentlich).")
     if a.editor_email:
         ensure_editor_user(api, role, a.editor_email, a.editor_password)
     if a.notify_email:

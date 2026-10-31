@@ -10,6 +10,10 @@ on:
         description: Bestehende Blogbeiträge als Entwürfe importieren
         type: boolean
         default: false
+      without_custom_rules:
+        description: Notmodus ohne Directus-Lizenz (Entwürfe per API lesbar, alle Dateien öffentlich)
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -26,10 +30,12 @@ jobs:
           DIRECTUS_TOKEN: ${{ secrets.DIRECTUS_TOKEN }}
           NOTIFY_EMAIL: ${{ vars.NOTIFY_EMAIL }}
           IMPORT_POSTS: ${{ inputs.import_posts }}
+          WITHOUT_CUSTOM_RULES: ${{ inputs.without_custom_rules }}
         run: |
           args=(--write-config js/gdx-directus-config.js)
           if [ -n "$NOTIFY_EMAIL" ]; then args+=(--notify-email "$NOTIFY_EMAIL"); fi
           if [ "$IMPORT_POSTS" = "true" ]; then args+=(--import-posts tools/legacy-posts.json); fi
+          if [ "$WITHOUT_CUSTOM_RULES" = "true" ]; then args+=(--without-custom-rules); fi
           python3 tools/directus_setup.py "${args[@]}"
 
       - name: Commit frontend config
