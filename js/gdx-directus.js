@@ -101,6 +101,11 @@
         if (!src) return '';
         return '<figure class="gdx-news-figure"><img alt="' + escapeHtml(block.alt_text) + '" src="' + escapeHtml(src) + '">' +
           (block.caption ? '<figcaption>' + escapeHtml(block.caption) + '</figcaption>' : '') + '</figure>';
+      case 'file':
+        var fileHref = block.file ? API + '/assets/' + encodeURIComponent(block.file) + '?download' : block.url;
+        if (!fileHref) return '';
+        return '<p class="gdx-news-file"><a href="' + escapeHtml(fileHref) + '" download rel="noopener">' +
+          escapeHtml(block.caption || 'Download') + '</a></p>';
       case 'video':
         if (!block.url) return '';
         return '<p><a href="' + escapeHtml(block.url) + '" rel="noopener">Video ansehen</a></p>';

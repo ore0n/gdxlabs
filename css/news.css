@@ -16,3 +16,6 @@
 @media (max-width: 600px) {
   .gdx-news-item { flex-direction: column; }
 }
+.gdx-news-file { margin: 16px 0; }
+.gdx-news-file a { display: inline-block; padding: 8px 14px; border: 1px solid currentColor; text-decoration: none; }
+.gdx-news-file a:hover { text-decoration: underline; }
