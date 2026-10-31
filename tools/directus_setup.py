@@ -219,8 +219,9 @@ class Access:
     def grant(self, label, target, collection, action, fields=("*",), permissions=None, presets=None):
         key = "policy" if self.v11 else "role"
         match = {"_null": True} if target is None else {"_eq": target}
-        body = {"collection": collection, "action": action, "fields": list(fields)}
-        # without custom rules the keys must be absent: Directus 12 rejects even null rules
+        # unlicensed Directus 12 refuses any field list other than "*" as a custom rule
+        body = {"collection": collection, "action": action, "fields": list(fields) if self.custom_rules else ["*"]}
+        # without custom rules the rule keys must be absent: Directus 12 rejects even null rules
         if self.custom_rules:
             body.update({"permissions": permissions or None, "validation": None, "presets": presets or None})
         existing = self.api.get("/permissions", fields="id", filter={

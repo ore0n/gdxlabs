@@ -2,7 +2,7 @@
    Directus instance to enable the news, the newsletter form and the
    contact form. siteKey must match the GdxLabs destination in Breakdown. */
 window.GDX_DIRECTUS = {
-  "url": "",
+  "url": "https://cms.trendities.com",
   "siteKey": "gdxlabs",
   "subscribers": "gdxlabs_newsletter_subscribers",
   "messages": "gdxlabs_contact_messages"
