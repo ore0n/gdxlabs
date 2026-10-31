@@ -8,6 +8,14 @@
 <link rel="icon" href="/wp-content/uploads/2016/09/Logo-gdx3.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Source+Code+Pro:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/css/site.css">
+<script>
+  // Breakdown reports posts as /posts/<slug>/; the news page is /news/?post=<slug>.
+  // GitHub Pages serves this page for every unknown path, so the redirect happens here.
+  (function () {
+    var m = location.pathname.match(/^\/posts\/([^\/]+)\/?$/);
+    if (m) location.replace('/news/?post=' + encodeURIComponent(m[1]));
+  })();
+</script>
 </head>
 <body>
 <canvas id="smoke" aria-hidden="true"></canvas>

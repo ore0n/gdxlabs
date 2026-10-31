@@ -1,41 +1,40 @@
 #!/usr/bin/env python3
 """Set up an existing Directus instance as backend for the gdxlabs.com site.
 
+News are not created here: Breakdown publishes them to the collections posts and
+content_blocks (site_key "gdxlabs"). This script adds the rules for them.
+
 Creates (idempotently, safe to run again):
-  * collection gdxlabs_news                    - news posts shown on /news/
   * collection gdxlabs_newsletter_subscribers  - sign-ups from the newsletter form
   * collection gdxlabs_contact_messages        - messages from the contact form
-  * file folder "gdxlabs-news"                 - cover images of news posts
-  * public permissions: read published news and their images, create
-    subscribers and contact messages (but not read them)
-  * role/policy "GDX Labs Redaktion"           - write news, manage subscribers and messages
+  * public permissions: read published posts of site gdxlabs and their
+    content blocks, create subscribers and contact messages (but not read them)
+  * role/policy "GDX Labs Redaktion"           - read this site's posts, manage subscribers and messages
   * optionally an editor user, an e-mail notification for new contact
-    messages, an import of the old blog posts, and
-    js/gdx-directus-config.js for the static site
+    messages, and js/gdx-directus-config.js for the static site
 
-Works with Directus 10 (role based permissions) and 11+ (policies). An unlicensed
-Directus 12 (core tier) refuses the item rules above; --without-custom-rules sets
-up the same collections without them (see its help for what that exposes).
+Works with Directus 10 (role based permissions) and 11+ (policies). The site rules
+need a license on Directus 12 (core tier refuses item rules); --without-custom-rules
+sets up the subscriber and message collections without them and leaves posts private.
 Only uses the Python standard library.
 
 Example:
   DIRECTUS_TOKEN=<admin static token> python3 tools/directus_setup.py \\
       --url https://cms.example.com --write-config js/gdx-directus-config.js \\
       --editor-email redaktion@gdxlabs.com --editor-password '...' \\
-      --import-posts tools/legacy-posts.json \\
       --notify-email office@gdxlabs.com
 """
 import argparse, json, mimetypes, os, sys, uuid
 import urllib.error, urllib.parse, urllib.request
 
-NEWS = "gdxlabs_news"
+SITE_KEY = "gdxlabs"  # siteKey of the GdxLabs destination in Breakdown (config/directus-destinations.json)
 SUBSCRIBERS = "gdxlabs_newsletter_subscribers"
 MESSAGES = "gdxlabs_contact_messages"
 NOTIFY_FLOW = "GDX Labs: Benachrichtigung Kontaktformular"
-FOLDER = "gdxlabs-news"
 EDITOR = "GDX Labs Redaktion"
 EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
-PUBLIC_NEWS_FIELDS = ["id", "status", "title", "slug", "summary", "content", "cover_image", "date_published"]
+PUBLIC_POST_FIELDS = ["id", "site_key", "status", "title", "slug", "excerpt", "publish_at", "language", "source_date"]
+PUBLIC_BLOCK_FIELDS = ["id", "post_id", "sort", "type", "layout", "text", "url", "file", "alt_text", "caption"]
 SUBSCRIBE_FIELDS = ["name", "email", "source"]
 MESSAGE_FIELDS_PUBLIC = ["name", "email", "subject", "message", "source"]
 
@@ -107,35 +106,6 @@ def choice(text, value, color):
     return {"text": text, "value": value, "color": color}
 
 
-NEWS_FIELDS = [
-    # content is written by an external publishing tool, so new items are live unless it says otherwise
-    {"field": "status", "type": "string", "schema": {"default_value": "published", "is_nullable": False},
-     "meta": {"interface": "select-dropdown", "display": "labels", "width": "half", "sort": 2,
-              "options": {"choices": [choice("Veröffentlicht", "published", "#2ECDA7"), choice("Entwurf", "draft", "#A2B5CD"),
-                                      choice("Archiviert", "archived", "#F7971C")]},
-              "display_options": {"choices": [choice("Veröffentlicht", "published", "#2ECDA7"), choice("Entwurf", "draft", "#A2B5CD"),
-                                              choice("Archiviert", "archived", "#F7971C")]}}},
-    {"field": "date_published", "type": "timestamp", "schema": {},
-     "meta": {"interface": "datetime", "display": "datetime", "width": "half", "sort": 3,
-              "note": "Datum, das auf der Website angezeigt wird; die News-Liste ist danach sortiert"}},
-    {"field": "title", "type": "string", "schema": {"is_nullable": False},
-     "meta": {"interface": "input", "required": True, "width": "full", "sort": 4}},
-    {"field": "slug", "type": "string", "schema": {"is_unique": True},
-     "meta": {"interface": "input", "options": {"slug": True, "trim": True}, "width": "half", "sort": 5,
-              "note": "Teil der URL: /news/?post=<slug>. Leer lassen, dann wird die ID verwendet"}},
-    {"field": "cover_image", "type": "uuid", "schema": {},
-     "meta": {"interface": "file-image", "display": "image", "special": ["file"], "width": "half", "sort": 6,
-              "options": {"folder": None}}},
-    {"field": "summary", "type": "text", "schema": {},
-     "meta": {"interface": "input-multiline", "width": "full", "sort": 7, "note": "Kurztext für die News-Liste"}},
-    {"field": "content", "type": "text", "schema": {},
-     "meta": {"interface": "input-rich-text-html", "display": "formatted-value", "width": "full", "sort": 8}},
-    {"field": "date_created", "type": "timestamp", "schema": {},
-     "meta": {"special": ["date-created"], "interface": "datetime", "readonly": True, "hidden": True, "width": "half"}},
-    {"field": "date_updated", "type": "timestamp", "schema": {},
-     "meta": {"special": ["date-updated"], "interface": "datetime", "readonly": True, "hidden": True, "width": "half"}},
-]
-
 SUBSCRIBER_FIELDS = [
     {"field": "email", "type": "string", "schema": {"is_nullable": False, "is_unique": True},
      "meta": {"interface": "input", "required": True, "width": "half", "sort": 2,
@@ -198,22 +168,6 @@ def ensure_collection(api, name, meta, fields):
         if want is not None and (current.get("schema") or {}).get("default_value") != want:
             api.patch(f"/fields/{name}/{field['field']}", {"schema": {"default_value": want}})
             log(f"  ~ field {field['field']} (Standardwert {want})")
-
-
-def ensure_file_relation(api):
-    rels = api.get(f"/relations/{NEWS}") or []
-    if not any(r["field"] == "cover_image" for r in rels):
-        api.post("/relations", {"collection": NEWS, "field": "cover_image", "related_collection": "directus_files",
-                                "schema": {"on_delete": "SET NULL"}})
-        log("  + relation cover_image -> directus_files")
-
-
-def ensure_folder(api):
-    folders = api.get("/folders", filter={"name": {"_eq": FOLDER}}, fields="id")
-    if folders:
-        return folders[0]["id"]
-    log(f"+ folder {FOLDER}")
-    return api.post("/folders", {"name": FOLDER})["id"]
 
 
 # --- access control -----------------------------------------------------------
@@ -279,24 +233,29 @@ class Access:
         log(f"  {'~' if existing else '+'} {label}: {action} {collection}")
 
 
-def setup_permissions(api, access, folder_id):
+def setup_permissions(api, access):
     public = access.public()
     log("Public-Zugriff:")
-    if not access.custom_rules:
+    if access.custom_rules:
+        # Breakdown writes every site's posts into these collections; the rules limit reads to this site
+        site_posts = {"_and": [{"site_key": {"_eq": SITE_KEY}}, {"status": {"_eq": "published"}}]}
+        access.grant("public", public, "posts", "read", PUBLIC_POST_FIELDS, permissions=site_posts)
+        access.grant("public", public, "content_blocks", "read", PUBLIC_BLOCK_FIELDS,
+                     permissions={"post_id": site_posts})
+    else:
+        log("  - posts und content_blocks nicht öffentlich: ohne Lizenz ließe sich nicht auf diese Site beschränken")
         log("  ! ohne eigene Regeln: Entwürfe sind über die API lesbar, alle Dateien der Instanz öffentlich")
-    access.grant("public", public, NEWS, "read", PUBLIC_NEWS_FIELDS, permissions={"status": {"_eq": "published"}})
-    access.grant("public", public, "directus_files", "read", permissions={"folder": {"_eq": folder_id}})
     access.grant("public", public, SUBSCRIBERS, "create", SUBSCRIBE_FIELDS, presets={"status": "subscribed"})
     access.grant("public", public, MESSAGES, "create", MESSAGE_FIELDS_PUBLIC, presets={"status": "new"})
     role, editor = access.editor()
     log(f"{EDITOR}:")
-    for action in ("create", "read", "update", "delete"):
-        access.grant("editor", editor, NEWS, action)
-        access.grant("editor", editor, "directus_files", action)
     for action in ("read", "update", "delete"):
         access.grant("editor", editor, SUBSCRIBERS, action)
         access.grant("editor", editor, MESSAGES, action)
-    access.grant("editor", editor, "directus_folders", "read")
+    if access.custom_rules:
+        site_posts = {"_and": [{"site_key": {"_eq": SITE_KEY}}, {"status": {"_eq": "published"}}]}
+        access.grant("editor", editor, "posts", "read", permissions=site_posts)
+        access.grant("editor", editor, "content_blocks", "read", permissions={"post_id": site_posts})
     return role
 
 
@@ -329,31 +288,11 @@ def ensure_notification(api, recipients):
         log(f"+ flow {NOTIFY_FLOW} (Empfänger: {', '.join(recipients)})")
 
 
-# --- import of the old blog posts ---------------------------------------------
-
-def import_posts(api, posts_file, folder_id, status):
-    """Create news items from tools/legacy-posts.json (the posts of the former
-    WordPress site); cover paths in it are relative to that file."""
-    posts = json.load(open(posts_file, encoding="utf-8"))
-    base = os.path.dirname(os.path.abspath(posts_file))
-    existing = {i["slug"] for i in api.get(f"/items/{NEWS}", fields="slug", limit=-1)}
-    for post in posts:
-        post = dict(post)
-        cover = post.pop("cover", None)
-        if post["slug"] in existing:
-            log(f"= news {post['slug']}")
-            continue
-        if cover:
-            post["cover_image"] = api.upload(os.path.join(base, cover), folder_id, post["title"])["id"]
-        api.post(f"/items/{NEWS}", dict(post, status=status))
-        log(f"+ news {post['slug']} ({status})")
-
-
 # --- checks / output -------------------------------------------------------------
 
 def check_cors(url, origins):
     for origin in origins:
-        req = urllib.request.Request(f"{url}/items/{NEWS}", method="OPTIONS", headers={
+        req = urllib.request.Request(f"{url}/items/{SUBSCRIBERS}", method="OPTIONS", headers={
             "Origin": origin, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "content-type"})
         try:
             with urllib.request.urlopen(req) as r:
@@ -374,7 +313,7 @@ def write_config(path, url):
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write("/* Generated by tools/directus_setup.py (--write-config). */\n"
-                "window.GDX_DIRECTUS = " + json.dumps({"url": url, "news": NEWS, "subscribers": SUBSCRIBERS, "messages": MESSAGES}, indent=2) + ";\n")
+                "window.GDX_DIRECTUS = " + json.dumps({"url": url, "siteKey": SITE_KEY, "subscribers": SUBSCRIBERS, "messages": MESSAGES}, indent=2) + ";\n")
     log(f"Frontend-Konfiguration geschrieben: {path}")
 
 
@@ -388,8 +327,6 @@ def main():
     p.add_argument("--editor-password", default=os.environ.get("DIRECTUS_EDITOR_PASSWORD"))
     p.add_argument("--notify-email", action="append", default=[], metavar="ADDRESS",
                    help="mail new contact messages to this address (repeatable; needs EMAIL_* set up in Directus)")
-    p.add_argument("--import-posts", metavar="JSON", help="import old posts as news items (tools/legacy-posts.json)")
-    p.add_argument("--import-status", default="draft", choices=["draft", "published"], help="status of imported posts")
     p.add_argument("--write-config", metavar="PATH", help="write the frontend config (js/gdx-directus-config.js)")
     p.add_argument("--origin", action="append", default=[], help="site origin to check CORS for (repeatable)")
     p.add_argument("--without-custom-rules", action="store_true",
@@ -407,19 +344,14 @@ def main():
     if not api.get("/users/me", fields="role.admin_access,admin_access"):
         sys.exit("Login fehlgeschlagen")
 
-    ensure_collection(api, NEWS, {"icon": "newspaper", "note": "News für gdxlabs.com (/news/)", "display_template": "{{title}}",
-                                  "archive_field": "status", "archive_value": "archived", "unarchive_value": "published",
-                                  "sort_field": None}, NEWS_FIELDS)
-    ensure_file_relation(api)
     ensure_collection(api, SUBSCRIBERS, {"icon": "mark_email_read", "note": "Newsletter-Anmeldungen von gdxlabs.com",
                                          "display_template": "{{email}}"}, SUBSCRIBER_FIELDS)
     ensure_collection(api, MESSAGES, {"icon": "contact_mail", "note": "Nachrichten aus dem Kontaktformular von gdxlabs.com",
                                       "display_template": "{{name}}: {{subject}}", "sort_field": None,
                                       "archive_field": "status", "archive_value": "archived", "unarchive_value": "new"},
                       MESSAGE_FIELDS)
-    folder_id = ensure_folder(api)
     try:
-        role = setup_permissions(api, Access(api, custom_rules=not a.without_custom_rules), folder_id)
+        role = setup_permissions(api, Access(api, custom_rules=not a.without_custom_rules))
     except DirectusError as e:
         if "custom_permission_rules_enabled" not in e.body:
             raise
@@ -430,8 +362,6 @@ def main():
         ensure_editor_user(api, role, a.editor_email, a.editor_password)
     if a.notify_email:
         ensure_notification(api, a.notify_email)
-    if a.import_posts:
-        import_posts(api, a.import_posts, folder_id, a.import_status)
     if a.write_config:
         write_config(a.write_config, api.url)
     check_cors(api.url, a.origin or ["https://www.gdxlabs.com", "https://gdxlabs.com"])
