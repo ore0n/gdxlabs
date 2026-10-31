@@ -265,10 +265,10 @@ class Access:
     def grant(self, label, target, collection, action, fields=("*",), permissions=None, presets=None):
         key = "policy" if self.v11 else "role"
         match = {"_null": True} if target is None else {"_eq": target}
-        if not self.custom_rules:
-            permissions = presets = None
-        body = {"collection": collection, "action": action, "fields": list(fields),
-                "permissions": permissions or None, "validation": None, "presets": presets or None}
+        body = {"collection": collection, "action": action, "fields": list(fields)}
+        # without custom rules the keys must be absent: Directus 12 rejects even null rules
+        if self.custom_rules:
+            body.update({"permissions": permissions or None, "validation": None, "presets": presets or None})
         existing = self.api.get("/permissions", fields="id", filter={
             "_and": [{"collection": {"_eq": collection}}, {"action": {"_eq": action}}, {key: match}]})
         if existing:
