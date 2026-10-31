@@ -35,7 +35,7 @@ EDITOR = "GDX Labs Redaktion"
 EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 PUBLIC_POST_FIELDS = ["id", "site_key", "status", "title", "slug", "excerpt", "publish_at", "language", "source_date"]
 PUBLIC_BLOCK_FIELDS = ["id", "post_id", "sort", "type", "layout", "text", "url", "file", "alt_text", "caption"]
-PUBLIC_FILE_FIELDS = ["id", "type", "title", "width", "height", "filesize"]
+PUBLIC_FILE_FIELDS = ["id", "type", "title", "filename_download", "width", "height", "filesize"]
 SUBSCRIBE_FIELDS = ["name", "email", "source"]
 MESSAGE_FIELDS_PUBLIC = ["name", "email", "subject", "message", "source"]
 
