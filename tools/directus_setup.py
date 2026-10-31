@@ -35,6 +35,7 @@ EDITOR = "GDX Labs Redaktion"
 EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 PUBLIC_POST_FIELDS = ["id", "site_key", "status", "title", "slug", "excerpt", "publish_at", "language", "source_date"]
 PUBLIC_BLOCK_FIELDS = ["id", "post_id", "sort", "type", "layout", "text", "url", "file", "alt_text", "caption"]
+PUBLIC_FILE_FIELDS = ["id", "type", "title", "width", "height", "filesize"]
 SUBSCRIBE_FIELDS = ["name", "email", "source"]
 MESSAGE_FIELDS_PUBLIC = ["name", "email", "subject", "message", "source"]
 
@@ -233,15 +234,40 @@ class Access:
         log(f"  {'~' if existing else '+'} {label}: {action} {collection}")
 
 
+def ensure_block_file_link(api):
+    """Breakdown imports images into directus_files and references them from content_blocks.file.
+    The reverse alias on directus_files lets the public rule follow that link: only files used by
+    published posts of this site become readable."""
+    if "content_blocks" not in {c["collection"] for c in api.get("/collections")}:
+        log("  ! content_blocks fehlt: Bilder-Freigabe übersprungen")
+        return
+    files = {f["field"] for f in api.get("/fields/directus_files")}
+    if "content_blocks" not in files:
+        api.post("/fields/directus_files", {"field": "content_blocks", "type": "alias",
+                                            "meta": {"special": ["o2m"], "interface": "list-o2m", "hidden": True}})
+        log("  + field directus_files.content_blocks (Rückverweis)")
+    rels = api.get("/relations/content_blocks") or []
+    if not any(r["field"] == "file" for r in rels):
+        api.post("/relations", {"collection": "content_blocks", "field": "file", "related_collection": "directus_files",
+                                "meta": {"one_field": "content_blocks"}, "schema": {"on_delete": "SET NULL"}})
+        log("  + relation content_blocks.file -> directus_files")
+
+
 def setup_permissions(api, access):
     public = access.public()
     log("Public-Zugriff:")
+    site_posts = {"_and": [{"site_key": {"_eq": SITE_KEY}}, {"status": {"_eq": "published"}}]}
     if access.custom_rules:
         # Breakdown writes every site's posts into these collections; the rules limit reads to this site
-        site_posts = {"_and": [{"site_key": {"_eq": SITE_KEY}}, {"status": {"_eq": "published"}}]}
         access.grant("public", public, "posts", "read", PUBLIC_POST_FIELDS, permissions=site_posts)
         access.grant("public", public, "content_blocks", "read", PUBLIC_BLOCK_FIELDS,
                      permissions={"post_id": site_posts})
+        # only images that published posts of this site use. Directus 11 ignores the rule when both
+        # conditions sit in one _some, so they are split: used by a block of this site, and by a published post
+        access.grant("public", public, "directus_files", "read", PUBLIC_FILE_FIELDS,
+                     permissions={"_and": [
+                         {"content_blocks": {"_some": {"post_id": {"site_key": {"_eq": SITE_KEY}}}}},
+                         {"content_blocks": {"_some": {"post_id": {"status": {"_eq": "published"}}}}}]})
     else:
         log("  - posts und content_blocks nicht öffentlich: ohne Lizenz ließe sich nicht auf diese Site beschränken")
         log("  ! ohne eigene Regeln: Entwürfe sind über die API lesbar, alle Dateien der Instanz öffentlich")
@@ -253,7 +279,6 @@ def setup_permissions(api, access):
         access.grant("editor", editor, SUBSCRIBERS, action)
         access.grant("editor", editor, MESSAGES, action)
     if access.custom_rules:
-        site_posts = {"_and": [{"site_key": {"_eq": SITE_KEY}}, {"status": {"_eq": "published"}}]}
         access.grant("editor", editor, "posts", "read", permissions=site_posts)
         access.grant("editor", editor, "content_blocks", "read", permissions={"post_id": site_posts})
     return role
@@ -344,6 +369,8 @@ def main():
     if not api.get("/users/me", fields="role.admin_access,admin_access"):
         sys.exit("Login fehlgeschlagen")
 
+    if not a.without_custom_rules:
+        ensure_block_file_link(api)
     ensure_collection(api, SUBSCRIBERS, {"icon": "mark_email_read", "note": "Newsletter-Anmeldungen von gdxlabs.com",
                                          "display_template": "{{email}}"}, SUBSCRIBER_FIELDS)
     ensure_collection(api, MESSAGES, {"icon": "contact_mail", "note": "Nachrichten aus dem Kontaktformular von gdxlabs.com",
