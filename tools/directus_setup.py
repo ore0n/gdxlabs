@@ -33,6 +33,8 @@ MESSAGES = "gdxlabs_contact_messages"
 NOTIFY_FLOW = "GDX Labs: Benachrichtigung Kontaktformular"
 EDITOR = "GDX Labs Redaktion"
 EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+# the site is also reachable over plain http (GitHub Pages without HTTPS), so those origins need CORS too
+SITE_ORIGINS = ["https://www.gdxlabs.com", "https://gdxlabs.com", "http://www.gdxlabs.com", "http://gdxlabs.com"]
 PUBLIC_POST_FIELDS = ["id", "site_key", "status", "title", "slug", "excerpt", "publish_at", "language", "source_date"]
 PUBLIC_BLOCK_FIELDS = ["id", "post_id", "sort", "type", "layout", "text", "url", "file", "alt_text", "caption"]
 PUBLIC_FILE_FIELDS = ["id", "type", "title", "filename_download", "width", "height", "filesize"]
@@ -391,7 +393,7 @@ def main():
         ensure_notification(api, a.notify_email)
     if a.write_config:
         write_config(a.write_config, api.url)
-    check_cors(api.url, a.origin or ["https://www.gdxlabs.com", "https://gdxlabs.com"])
+    check_cors(api.url, a.origin or SITE_ORIGINS)
     log("Fertig.")
 
 
