@@ -253,6 +253,24 @@ def ensure_block_file_link(api):
         log("  + relation content_blocks.file -> directus_files")
 
 
+SITE_ENTRY = {
+    "key": SITE_KEY, "name": "GdxLabs", "public_url": "https://www.gdxlabs.com",
+    "theme_key": "gdxlabs", "default_language": "de", "enabled": True,
+}
+
+
+def ensure_site(api):
+    """posts.site_key is a relation to sites.key: Breakdown can only write posts for a site that exists."""
+    if "sites" not in {c["collection"] for c in api.get("/collections")}:
+        log("  ! Collection sites fehlt: Site-Eintrag übersprungen")
+        return
+    if api.get("/items/sites", filter={"key": {"_eq": SITE_KEY}}, fields="key", limit=1):
+        log(f"= site {SITE_KEY}")
+    else:
+        api.post("/items/sites", SITE_ENTRY)
+        log(f"+ site {SITE_KEY}")
+
+
 def setup_permissions(api, access):
     public = access.public()
     log("Public-Zugriff:")
@@ -369,6 +387,7 @@ def main():
     if not api.get("/users/me", fields="role.admin_access,admin_access"):
         sys.exit("Login fehlgeschlagen")
 
+    ensure_site(api)
     if not a.without_custom_rules:
         ensure_block_file_link(api)
     ensure_collection(api, SUBSCRIBERS, {"icon": "mark_email_read", "note": "Newsletter-Anmeldungen von gdxlabs.com",
