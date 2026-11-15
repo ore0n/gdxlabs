@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stencil-api
+  labels:
+    app: stencil-api
+spec:
+  # One replica: the queue is in memory and the model slot is exclusive
+  # anyway. Recreate so two pods never share the RWO cache volume.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: stencil-api
+  template:
+    metadata:
+      labels:
+        app: stencil-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: stencil-api
+          image: stencil-api
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: LITELLM_URL
+              value: "${LITELLM_URL}"
+            - name: LITELLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stencil-litellm
+                  key: api-key
+            - name: STENCIL_MODEL
+              value: "stencil-diffuser"
+            # Above the route's 900s LiteLLM timeout, so the platform gives up
+            # first and says why.
+            - name: GENERATE_TIMEOUT_MS
+              value: "960000"
+            - name: ALLOWED_ORIGINS
+              value: "https://www.gdxlabs.com,https://gdxlabs.com"
+            - name: RATE_BURST
+              value: "3"
+            - name: RATE_REFILL_MS
+              value: "600000"
+            - name: MAX_QUEUED
+              value: "12"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 48Mi
+            limits:
+              cpu: 500m
+              memory: 192Mi
+          readinessProbe:
+            httpGet:
+              path: /api/readyz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: http
+            periodSeconds: 20
+            failureThreshold: 6
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: stencils
+              mountPath: /data/stencils
+      volumes:
+        - name: stencils
+          persistentVolumeClaim:
+            claimName: stencil-cache

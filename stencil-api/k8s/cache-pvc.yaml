@@ -1,0 +1,12 @@
+# Finished stencils, one small JSON each. Same prompt, same stencil, so a
+# drawn one is never drawn again.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: stencil-cache
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path

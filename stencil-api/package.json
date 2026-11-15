@@ -1,0 +1,12 @@
+{
+  "name": "gdxlabs-stencil-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Draws airbrush-stencil SVGs through the stencil-diffuser route on the LiteLLM platform, for www.gdxlabs.com/stencil",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test \"test/*.test.js\""
+  }
+}
