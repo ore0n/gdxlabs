@@ -9,11 +9,11 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Source+Code+Pro:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/css/site.css">
 <script>
-  // Breakdown reports posts as /posts/<slug>/; the news page is /news/?post=<slug>.
+  // Breakdown reports posts as /posts/<slug>/; news lives on the home page as /?post=<slug>#news.
   // GitHub Pages serves this page for every unknown path, so the redirect happens here.
   (function () {
     var m = location.pathname.match(/^\/posts\/([^\/]+)\/?$/);
-    if (m) location.replace('/news/?post=' + encodeURIComponent(m[1]));
+    if (m) location.replace('/?post=' + encodeURIComponent(m[1]) + '#news');
   })();
 </script>
 </head>
@@ -27,12 +27,8 @@
     <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav id="site-nav" aria-label="Hauptmenü">
       <ul>
-        <li><a href="/contact-us/">Contact Us</a></li>
-        <li><a href="/#whatwedo">What We Do</a></li>
-        <li><a href="/#whoweare">Who We Are</a></li>
-        <li><a href="/news/">News</a></li>
+        <li><a href="/#news">News</a></li>
         <li><a href="/stencil/">Stencils</a></li>
-        <li><a href="/#career">Career</a></li>
       </ul>
     </nav>
   </div>

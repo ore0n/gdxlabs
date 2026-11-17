@@ -41,7 +41,7 @@
   }
 
   function postUrl(item) {
-    return '?post=' + encodeURIComponent(item.slug || item.id);
+    return '?post=' + encodeURIComponent(item.slug || item.id) + '#news';
   }
 
   /* ---- list ---- */
@@ -121,7 +121,7 @@
         var item = items[0];
         if (!item) {
           root.innerHTML = '<p class="gdx-news-status">Diesen Beitrag gibt es nicht (mehr).</p>' +
-            '<a class="gdx-news-back" href="./">&larr; Alle News</a>';
+            '<a class="gdx-news-back" href="./#news">&larr; Alle News</a>';
           return null;
         }
         return getItems('content_blocks', {
@@ -139,7 +139,7 @@
             '<time class="gdx-news-date">' + escapeHtml(formatDate(item.publish_at)) + '</time>' +
             '<h2 class="gdx-news-post-title">' + escapeHtml(item.title) + '</h2>' +
             blocks.map(renderBlock).join('') +
-            '<a class="gdx-news-back" href="./">&larr; Alle News</a></article>';
+            '<a class="gdx-news-back" href="./#news">&larr; Alle News</a></article>';
         });
       })
       .catch(function () {

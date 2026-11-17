@@ -5,7 +5,7 @@
 # CI/CD variables (masked, protected):
 #   KUBECONFIG_CONTENT  raw kubeconfig YAML (or run on an in-cluster runner)
 #   KUBE_NAMESPACE      e.g. gdxlabs-stencil
-#   STENCIL_HOST        public host of the API, e.g. stencil.pwaxx.com
+#   STENCIL_HOST        public host of the API, e.g. gdx.pwaxx.com
 #   ACME_EMAIL          Let's Encrypt contact
 #   LITELLM_API_KEY     virtual key scoped to stencil-diffuser (see stencil-api/README.md)
 #   LITELLM_URL         optional; defaults to the in-cluster litellm Service in
