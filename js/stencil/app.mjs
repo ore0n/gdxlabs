@@ -448,7 +448,7 @@ const job = {
       this.started = Date.now();
       this.track(body);
     } catch (error) {
-      this.status(error instanceof TypeError ? "The stencil server is not reachable right now." : error.message, "warn");
+      this.status(error instanceof TypeError ? `The stencil server (${new URL(API_BASE).host}) is not reachable. It may not be deployed yet, or its address does not resolve.` : error.message, "warn");
       $("#generate").disabled = false;
     }
   },
