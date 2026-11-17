@@ -1,8 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 120">
   <!-- Layered black and white: a stencil only reads light and dark. -->
-  <circle cx="60" cy="60" r="50" fill="#000"/>
-  <circle cx="60" cy="60" r="31" fill="#fff"/>
-  <rect x="62" y="22" width="52" height="34" fill="#fff"/>
+  <!-- G: one open ring (stroked arc, 19 wide) plus the bar. No white shapes layered over black. -->
+  <path d="M91 34A40.5 40.5 0 1 0 100.5 60" fill="none" stroke="#000" stroke-width="19"/>
   <rect x="62" y="56" width="48" height="16" fill="#000"/>
   <path d="M130 10h40a50 50 0 0 1 0 100h-40Z" fill="#000"/>
   <path d="M149 29h21a31 31 0 0 1 0 62h-21Z" fill="#fff"/>

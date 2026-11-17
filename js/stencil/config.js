@@ -3,7 +3,7 @@
 //
 // `?api=https://host` overrides it for testing a deployment before the
 // default points at it.
-const DEFAULT_API = "https://stencil.pwaxx.com";
+const DEFAULT_API = "https://gdx.pwaxx.com";
 
 function fromQuery() {
   try {
