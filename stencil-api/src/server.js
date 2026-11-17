@@ -19,6 +19,7 @@ import { createServer } from "node:http";
 import { loadConfig, validateConfig } from "./config.js";
 import { drawStencil, JobStore, PromptError } from "./jobs.js";
 import { RateLimiter } from "./ratelimit.js";
+import { libraryEntries, Ledger, loadPrompts, Nightly, parseWindow } from "./precache.js";
 
 const MAX_BODY = 4 * 1024;
 
@@ -45,7 +46,7 @@ async function readJson(req) {
   }
 }
 
-export function createApp(config, { store, limiter }) {
+export function createApp(config, { store, limiter, prompts = [] }) {
   const allowed = new Set(config.allowedOrigins);
 
   function send(req, res, status, body, headers = {}) {
@@ -82,7 +83,26 @@ export function createApp(config, { store, limiter }) {
       if (path === "/api/healthz" || path === "/api/readyz") {
         return send(req, res, 200, { ok: true, model: config.model, queued: store.queue.length, running: Boolean(store.running) });
       }
+      if (path === "/api/stencil/library" && req.method === "GET") {
+        // The ready-made motifs that have been drawn. Thumbnails come from the .svg route.
+        return send(req, res, 200, { items: await libraryEntries(store, prompts) }, { "cache-control": "public, max-age=300" });
+      }
+      const svgMatch = /^\/api\/stencil\/jobs\/([0-9a-f]{20})\.svg$/.exec(path);
+      if (svgMatch && req.method === "GET") {
+        const job = await store.get(svgMatch[1]);
+        if (job?.status !== "done") return send(req, res, 404, { error: "no such stencil" });
+        res.writeHead(200, {
+          "content-type": "image/svg+xml; charset=utf-8",
+          "cache-control": "public, max-age=86400",
+          "x-content-type-options": "nosniff",
+          "cross-origin-resource-policy": "cross-origin",
+          // A stencil is a picture; nothing in it should ever run.
+          "content-security-policy": "default-src 'none'; style-src 'unsafe-inline'",
+        });
+        return res.end(job.svg);
+      }
       if (path === "/api/stencil/jobs" && req.method === "POST") {
+        store.noteVisitor();
         const body = await readJson(req);
         // Rate-limit only work that would cost a draw: a known prompt is free.
         let job = await store.lookup(body.prompt);
@@ -128,11 +148,29 @@ export function main() {
     }),
   });
   const limiter = new RateLimiter({ capacity: config.rateBurst, refillMs: config.rateRefillMs });
-  const server = createServer(createApp(config, { store, limiter }));
-  server.listen(config.port, config.host, () => {
-    console.log(`stencil-api on :${config.port}, route ${config.model} at ${config.litellmUrl}, origins ${config.allowedOrigins.join(" ")}`);
+  loadPrompts(config.promptsFile).then(async (prompts) => {
+    const server = createServer(createApp(config, { store, limiter, prompts }));
+    server.listen(config.port, config.host, () => {
+      console.log(`stencil-api on :${config.port}, route ${config.model} at ${config.litellmUrl}, origins ${config.allowedOrigins.join(" ")}, library ${prompts.length} motifs`);
+    });
+    let nightly = null;
+    if (config.precache.enabled) {
+      const { windowText, tz, perDay, idleMs, pollMs } = config.precache;
+      const ledger = await new Ledger(config.cacheDir ? `${config.cacheDir}/_precache.json` : "").load();
+      nightly = new Nightly({ store, prompts, ledger, window: parseWindow(windowText), tz, perDay, idleMs, pollMs });
+      nightly.run();
+      console.log(`precache on: ${prompts.length} motifs, ${windowText} ${tz}, ${perDay}/day`);
+    }
+    for (const signal of ["SIGTERM", "SIGINT"]) {
+      process.on(signal, () => {
+        nightly?.stop();
+        server.close(() => process.exit(0));
+      });
+    }
+  }).catch((error) => {
+    console.error(error);
+    process.exit(1);
   });
-  for (const signal of ["SIGTERM", "SIGINT"]) process.on(signal, () => server.close(() => process.exit(0)));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) main();

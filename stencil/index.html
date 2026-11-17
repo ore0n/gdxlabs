@@ -40,6 +40,7 @@
         <h2><span class="step">1</span> Motif</h2>
         <div class="tabs" role="tablist">
           <button type="button" role="tab" aria-selected="true" data-tab="generate">Generate</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="library">Library</button>
           <button type="button" role="tab" aria-selected="false" data-tab="upload">Upload</button>
           <button type="button" role="tab" aria-selected="false" data-tab="demo">Demo</button>
         </div>
@@ -51,6 +52,11 @@
           <button class="btn" type="button" id="generate">Draw stencil</button>
           <p class="hint">Drawn by our own image model as a black silhouette and traced to SVG. Takes 2–5 minutes; you can leave the page open and keep tuning.</p>
           <div id="job" class="job-status" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="tab-body" data-body="library" hidden>
+          <div id="library" class="library" aria-live="polite"></div>
+          <p class="hint">Ready-made motifs, drawn overnight. Pick one to use it right away.</p>
         </div>
 
         <div class="tab-body" data-body="upload" hidden>

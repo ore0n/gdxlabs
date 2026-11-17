@@ -1,0 +1,57 @@
+# Ready-made motifs, one prompt per line. # starts a comment.
+# Drawn overnight (PRECACHE_*) and listed on the Library tab once drawn.
+# Think silhouettes: bold shapes, no fine detail. The server adds the
+# "black silhouette on white" part itself, so describe only the subject.
+# Changing a line draws it anew; removing one leaves its stencil in the cache.
+
+# animals
+a howling wolf head in profile
+a lion head facing forward with a full mane
+a bear head in profile
+an eagle with spread wings
+a butterfly with open wings
+a dolphin jumping out of the water
+a cat sitting seen from the side
+a horse head in profile
+a coiled snake
+a deer head with large antlers
+an owl sitting on a branch
+a shark in side view
+a fox sitting with a bushy tail
+a dragon head in profile
+a spider hanging from its web
+
+# nature
+a rose with two leaves
+a bare tree with many branches
+a mountain range with a sun
+a palm tree on a small island
+a single feather
+a maple leaf
+a sunflower seen from the front
+a crescent moon with a star
+a wave curling over
+
+# symbols
+a five-pointed star
+a crown with three points
+a lightning bolt
+an anchor with rope
+a compass rose
+a heart with wings
+a skull seen from the front
+a hand with open fingers
+a key with an ornate head
+a sword pointing downwards
+
+# things
+a sailing ship in side view
+a motorcycle in side view
+a vintage car in side view
+a guitar seen from the front
+a rocket flying upwards
+a bicycle in side view
+a lighthouse on a rock
+a coffee cup with steam
+a pair of headphones
+a camera seen from the front

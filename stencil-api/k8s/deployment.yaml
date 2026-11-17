@@ -52,6 +52,16 @@ spec:
               value: "600000"
             - name: MAX_QUEUED
               value: "12"
+            # The nightly loop: draws prompts.txt while nobody is waiting, so the
+            # page's Library fills up. "0" turns it off; drawn stencils stay.
+            - name: PRECACHE_ENABLED
+              value: "1"
+            - name: PRECACHE_WINDOW
+              value: "01:00-06:00"
+            - name: PRECACHE_TZ
+              value: "Europe/Vienna"
+            - name: PRECACHE_PER_DAY
+              value: "20"
           resources:
             requests:
               cpu: 10m

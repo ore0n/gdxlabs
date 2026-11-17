@@ -51,6 +51,7 @@ for (const tab of $$("[data-tab]")) {
   tab.addEventListener("click", () => {
     for (const t of $$("[data-tab]")) t.setAttribute("aria-selected", String(t === tab));
     for (const body of $$("[data-body]")) body.hidden = body.dataset.body !== tab.dataset.tab;
+    if (tab.dataset.tab === "library") library.load();
   });
 }
 for (const tab of $$("[data-view]")) {
@@ -420,6 +421,56 @@ $("#dl-svg").addEventListener("click", () => {
   const { shapes, stats } = state.result;
   download(shapesToSvg(shapes, stats.widthMm, stats.heightMm), `${baseName()}-outline.svg`, "image/svg+xml");
 });
+
+// ---------------------------------------------------------------------------
+// library: ready-made motifs the nightly loop has drawn
+// ---------------------------------------------------------------------------
+
+const library = {
+  loaded: false,
+  async load() {
+    if (this.loaded) return;
+    const root = $("#library");
+    root.textContent = "Loading…";
+    try {
+      const response = await fetch(`${API_BASE}/api/stencil/library`);
+      if (!response.ok) throw new Error(String(response.status));
+      const { items } = await response.json();
+      this.loaded = true;
+      root.replaceChildren();
+      if (!items.length) {
+        root.textContent = "Nothing here yet. Motifs appear once they have been drawn.";
+        return;
+      }
+      for (const item of items) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.title = item.prompt;
+        const img = new Image();
+        img.alt = item.prompt;
+        img.loading = "lazy";
+        img.src = `${API_BASE}/api/stencil/jobs/${item.id}.svg`;
+        const label = document.createElement("span");
+        label.textContent = item.prompt;
+        button.append(img, label);
+        button.addEventListener("click", () => this.pick(item));
+        root.append(button);
+      }
+    } catch {
+      root.textContent = `The library is not reachable (${new URL(API_BASE).host}).`;
+    }
+  },
+  async pick(item) {
+    try {
+      const response = await fetch(`${API_BASE}/api/stencil/jobs/${item.id}`);
+      const job = await response.json();
+      if (job.status !== "done") throw new Error("not ready");
+      setSource(svgUrl(job.svg), `${item.prompt.slice(0, 30)}.svg`, true);
+    } catch {
+      showEmpty("That motif could not be loaded. Please try another.");
+    }
+  },
+};
 
 // ---------------------------------------------------------------------------
 // generate by prompt

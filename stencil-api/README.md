@@ -29,6 +29,27 @@ browser ──POST /api/stencil/jobs──► stencil-api ──/v1/chat/complet
 - CORS only for `ALLOWED_ORIGINS`.
 - The SVG passes through AllBlobs' sanitiser (`src/svg.js`, copied verbatim).
 
+## The nightly loop
+
+`prompts.txt` is a list of ready-made motifs, one prompt per line. With
+`PRECACHE_ENABLED=1` the service draws them overnight so the page's **Library**
+tab is full and popular prompts are instant. It is a loop inside the API
+process (not a CronJob), modelled on AllBlobs' pre-cache:
+
+- only inside `PRECACHE_WINDOW` (default `01:00-06:00`, local time in `PRECACHE_TZ`);
+- at most `PRECACHE_PER_DAY` draws a day (default 20), counted in `_precache.json` beside the cache;
+- only when nothing is queued or running and no visitor has asked for anything for `PRECACHE_IDLE_MS` (30 s), so visitors never wait behind it for more than the one stencil in flight;
+- a prompt that failed is left alone for a day, then two, then four, and after four attempts never again.
+
+Edit `prompts.txt` and deploy to change the list; a changed line is drawn anew,
+a removed one keeps its stencil in the cache. To switch the loop off set
+`PRECACHE_ENABLED` to `"0"` in `k8s/deployment.yaml` (or
+`kubectl -n <ns> set env deployment/stencil-api PRECACHE_ENABLED=0`): drawn
+stencils stay and the Library keeps listing them.
+
+Extra endpoints: `GET /api/stencil/library` (the drawn motifs, `{items:[{id,prompt}]}`)
+and `GET /api/stencil/jobs/:id.svg` (a drawn stencil as an image, for thumbnails).
+
 ## The LiteLLM key
 
 One virtual key per service, scoped to this route only:

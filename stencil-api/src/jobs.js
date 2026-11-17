@@ -101,6 +101,19 @@ export class JobStore {
     this.queue = [];
     this.running = null;
     this.idle = Promise.resolve();
+    // When a visitor last asked for anything; the nightly loop stays out of
+    // the way for a while after it (see precache.js).
+    this.lastVisitorAt = 0;
+  }
+
+  noteVisitor() {
+    this.lastVisitorAt = this.now();
+  }
+
+  /** Resolves once `job` is done or failed, whatever is ahead of it. */
+  async waitFor(job) {
+    while (job.status === "queued" || job.status === "running") await this.idle;
+    return job;
   }
 
   async #load(id) {
@@ -190,8 +203,11 @@ export class JobStore {
     job.started = this.now();
     this.running = (async () => {
       try {
-        Object.assign(job, await this.draw(job.prompt), { status: "done", finished: this.now() });
-        await this.#save(job).catch((error) => console.error(`cache write failed for ${id}: ${error.message}`));
+        Object.assign(job, await this.draw(job.prompt), { finished: this.now() });
+        await this.#save({ ...job, status: "done" }).catch((error) => console.error(`cache write failed for ${id}: ${error.message}`));
+        // Last, so "done" and "the slot is free again" are one moment: anyone
+        // who sees the status can start the next draw (waitFor, the nightly loop).
+        job.status = "done";
       } catch (error) {
         Object.assign(job, { status: "failed", error: error.message, finished: this.now() });
         console.error(`stencil ${id} failed: ${error.message}`);
