@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stencil Lab – GdxLabs</title>
+<meta name="description" content="Turn an SVG, an image or an AI prompt into a 3D-printable airbrush stencil: islands bridged automatically, STL download.">
+<link rel="icon" href="../wp-content/uploads/2016/09/Logo-gdx3.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Source+Code+Pro:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/stencil.css">
+</head>
+<body>
+<canvas id="smoke" aria-hidden="true"></canvas>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="../"><img src="../wp-content/uploads/2018/03/gdxlabs_white.png" alt="GdxLabs"></a>
+    <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" aria-label="Hauptmenü">
+      <ul>
+        <li><a href="../contact-us/">Contact Us</a></li>
+        <li><a href="../#whatwedo">What We Do</a></li>
+        <li><a href="../#whoweare">Who We Are</a></li>
+        <li><a href="../news/">News</a></li>
+        <li><a href="./" aria-current="page">Stencils</a></li>
+        <li><a href="../#career">Career</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head">
+    <h1 class="single-title">Stencil Lab</h1>
+    <p class="page-lead">SVG, image or prompt in — a 3D-printable airbrush stencil out. Islands get bridges, thin spots get flagged.</p>
+  </div>
+
+  <section class="section stencil-app">
+    <div class="stencil-grid">
+      <!-- ---------- source ---------- -->
+      <div class="panel stencil-col">
+        <h2><span class="step">1</span> Motif</h2>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" aria-selected="true" data-tab="generate">Generate</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="upload">Upload</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="demo">Demo</button>
+        </div>
+
+        <div class="tab-body form" data-body="generate">
+          <label>Describe the motif
+            <textarea id="prompt" rows="3" maxlength="240" placeholder="a howling wolf head in profile"></textarea>
+          </label>
+          <button class="btn" type="button" id="generate">Draw stencil</button>
+          <p class="hint">Drawn by our own image model as a black silhouette and traced to SVG. Takes 2–5 minutes; you can leave the page open and keep tuning.</p>
+          <div id="job" class="job-status" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="tab-body" data-body="upload" hidden>
+          <label class="drop" id="drop">
+            <input type="file" id="file" accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp">
+            <i class="fas fa-upload" aria-hidden="true"></i>
+            <span>Drop an SVG or image here, or click to choose</span>
+          </label>
+          <p class="hint">Dark parts are cut out of the plate. Your file stays in your browser.</p>
+        </div>
+
+        <div class="tab-body" data-body="demo" hidden>
+          <div class="demos">
+            <button type="button" data-demo="../assets/stencil/demo-target.svg"><img src="../assets/stencil/demo-target.svg" alt="Target rings"></button>
+            <button type="button" data-demo="../assets/stencil/demo-gdx.svg"><img src="../assets/stencil/demo-gdx.svg" alt="GDX letters"></button>
+            <button type="button" data-demo="../assets/stencil/demo-star.svg"><img src="../assets/stencil/demo-star.svg" alt="Star"></button>
+          </div>
+          <p class="hint">Rings and letters with closed counters — good for seeing the bridges.</p>
+        </div>
+
+        <div class="source-preview" id="source-preview" aria-label="Source motif"></div>
+      </div>
+
+      <!-- ---------- settings ---------- -->
+      <div class="panel stencil-col">
+        <h2><span class="step">2</span> Plate</h2>
+        <form class="form settings" id="settings" onsubmit="return false">
+          <fieldset>
+            <legend>Size</legend>
+            <label>Width <span class="unit">mm</span><input type="number" name="plateW" value="120" min="20" max="300" step="1"></label>
+            <label>Height <span class="unit">mm</span><input type="number" name="plateH" value="120" min="20" max="300" step="1"></label>
+            <label>Border <span class="unit">mm</span><input type="number" name="margin" value="10" min="2" max="60" step="0.5"></label>
+            <label>Thickness <span class="unit">mm</span><input type="number" name="thickness" value="1.2" min="0.4" max="5" step="0.1"></label>
+          </fieldset>
+          <fieldset>
+            <legend>Motif</legend>
+            <label>Threshold <output data-for="threshold">50</output>
+              <input type="range" name="threshold" value="50" min="5" max="95" step="1"></label>
+            <label class="check"><input type="checkbox" name="invert"> Invert (cut the light parts)</label>
+            <label>Resolution
+              <select name="mmPerPx">
+                <option value="0.3">0.3 mm (fast)</option>
+                <option value="0.2" selected>0.2 mm</option>
+                <option value="0.15">0.15 mm (fine)</option>
+              </select></label>
+          </fieldset>
+          <fieldset>
+            <legend>Bridges &amp; printer</legend>
+            <label class="check"><input type="checkbox" name="bridges" checked> Bridge islands</label>
+            <label>Bridge width <span class="unit">mm</span><input type="number" name="bridgeWidth" value="1.6" min="0.6" max="6" step="0.1"></label>
+            <label>Bridges per island
+              <select name="bridgesPerIsland"><option value="1">1</option><option value="2" selected>2</option></select></label>
+            <label>Nozzle <span class="unit">mm</span><input type="number" name="nozzle" value="0.4" min="0.2" max="1" step="0.05"></label>
+            <label>Ignore specks under <span class="unit">mm²</span><input type="number" name="speck" value="1" min="0" max="20" step="0.5"></label>
+          </fieldset>
+        </form>
+      </div>
+
+      <!-- ---------- result ---------- -->
+      <div class="panel stencil-col stencil-result">
+        <h2><span class="step">3</span> Stencil</h2>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" aria-selected="true" data-view="plan">Plan</button>
+          <button type="button" role="tab" aria-selected="false" data-view="3d">3D</button>
+        </div>
+        <div class="viewport">
+          <canvas id="plan" aria-label="Stencil plan view"></canvas>
+          <div id="three" hidden></div>
+          <div class="empty" id="empty">Pick a motif to start.</div>
+        </div>
+        <ul class="legend" aria-label="Legend">
+          <li><i class="sw plate"></i>plate</li><li><i class="sw cut"></i>cut-out</li>
+          <li><i class="sw bridge"></i>bridge</li><li><i class="sw thin"></i>too thin to print</li>
+        </ul>
+        <dl class="stats" id="stats"></dl>
+        <div class="downloads">
+          <button class="btn" type="button" id="dl-stl" disabled>Download STL</button>
+          <button class="btn btn-ghost" type="button" id="dl-svg" disabled>Outline SVG</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Stencil Lab</h2>
+      <p class="lead">Geometry runs in your browser. Only prompts are sent to our server.</p>
+    </div>
+    <div>
+      <p class="legal">© GDXLabs. All rights reserved.<br><a href="http://shop.dl-software.at/content/impressumagb" target="_blank" rel="noopener">Impressum</a></p>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/smoke.js"></script>
+<script src="../js/nav.js"></script>
+<script type="module" src="../js/stencil/app.mjs"></script>
+</body>
+</html>
