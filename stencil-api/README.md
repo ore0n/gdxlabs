@@ -67,8 +67,10 @@ Put the returned `sk-…` into the GitLab CI/CD variable `LITELLM_API_KEY`
 ## Deploy
 
 `.gitlab-ci.yml` at the repository root builds `stencil-api/Dockerfile` and
-deploys `stencil-api/k8s/` to the platform's k3s cluster on a tag (manual on
-`main`), the same way AllBlobs deploys. Variables: `KUBECONFIG_CONTENT`,
+deploys `stencil-api/k8s/` to the platform's k3s cluster automatically: on every
+tag, and on every push to `main` that touches `stencil-api/` or the pipeline
+file (site-only changes do not redeploy the API). It is its own deployment next
+to the platform; large-platform only provides the `stencil-diffuser` route. Variables: `KUBECONFIG_CONTENT`,
 `KUBE_NAMESPACE`, `STENCIL_HOST`, `ACME_EMAIL`, `LITELLM_API_KEY`, optionally
 `LITELLM_URL` / `KUBE_LITELLM_NAMESPACE`. `STENCIL_HOST` needs a DNS A record
 to the cluster; the page's default API host is in `js/stencil/config.js`

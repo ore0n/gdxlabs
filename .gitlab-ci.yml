@@ -27,6 +27,12 @@ variables:
   KUSTOMIZE_VERSION: "5.4.3"
   IMAGE: "$CI_REGISTRY_IMAGE/stencil-api"
 
+# The site is static (GitHub Pages) and needs no pipeline; only changes to the
+# stencil API, its manifests or this file rebuild and redeploy it.
+.service_changes: &service_changes
+  - stencil-api/**/*
+  - .gitlab-ci.yml
+
 .install_kustomize: &install_kustomize |
   curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" \
     | tar xz -C /usr/local/bin kustomize
@@ -47,6 +53,7 @@ build-image:
   rules:
     - if: '$CI_COMMIT_TAG'
     - if: '$CI_COMMIT_BRANCH == "main"'
+      changes: *service_changes
   before_script:
     - mkdir -p "$HOME/.docker"
     - AUTH="$(printf '%s:%s' "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD" | base64 | tr -d '\n')"
@@ -71,10 +78,12 @@ deploy-production:
   environment:
     name: production
     url: "https://$STENCIL_HOST/api/healthz"
+  # Automatic: every push to main that touches the service redeploys it, and
+  # so does every tag. Same rules as build-image, so the two always agree.
   rules:
     - if: '$CI_COMMIT_TAG'
     - if: '$CI_COMMIT_BRANCH == "main"'
-      when: manual
+      changes: *service_changes
   before_script:
     - apk add --no-cache gettext curl bash
     - *install_kustomize
