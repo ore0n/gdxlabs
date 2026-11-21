@@ -76,6 +76,23 @@ to the platform; large-platform only provides the `stencil-diffuser` route. Vari
 to the cluster; the page's default API host is in `js/stencil/config.js`
 (override per visit with `?api=https://host`).
 
+## Releasing: `scripts/sync.sh`
+
+`scripts/sync.sh` is the release script shared byte-for-byte with allblobs and
+large-platform. Run it on a `claude/…` or `codex/…` branch: it merges the
+branch into GitLab's `main`, tags the merge with the next `release-N`, pushes
+(the tag starts `deploy-production`) and mirrors `main` back to GitHub.
+
+```bash
+./scripts/sync.sh --dry-run   # what the next release would be
+./scripts/sync.sh             # merge, tag, deploy, mirror
+```
+
+It needs a second remote that points at the GitLab project (`git remote add
+gitlab git@<host>:<group>/gdxlabs.git`, or `GITLAB_REMOTE=<name>` for a
+self-hosted host) and at least one tag on GitLab's `main` to count from:
+`git tag -a release-0 -m 'first release' && git push gitlab release-0`.
+
 ## Local
 
 ```bash
